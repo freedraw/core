@@ -38,6 +38,11 @@ html, body {
   border-left: 1px solid rgb(184, 184, 184);
 }
 
+.panel-header {
+  border-bottom: 1px solid rgb(184, 184, 184);
+  background: rgb(245, 245, 245);
+  height: 26px;
+}
 .panel-resizer {
   position: absolute;
   top: 0;
