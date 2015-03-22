@@ -15,7 +15,6 @@ html, body {
 }
 
 .layers-panel {
-  width: 215px;
   border-right: 1px solid rgb(184, 184, 184);
 }
 .canvas {
@@ -23,6 +22,5 @@ html, body {
   background: rgb(242, 242, 242);
 }
 .inspector-panel {
-  width: 215px;
   border-left: 1px solid rgb(184, 184, 184);
 }
