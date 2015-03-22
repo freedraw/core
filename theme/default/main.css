@@ -19,6 +19,7 @@ html, body {
 }
 .canvas {
   -webkit-flex: 1;
+  background: rgb(242, 242, 242);
 }
 .inspector-panel {
   width: 200px;
