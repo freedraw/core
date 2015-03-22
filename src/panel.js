@@ -16,15 +16,18 @@ function Panel(editor, width, el) {
 }
 
 Panel.prototype.onResizeStart = function(e) {
+  e.preventDefault()
   this.resizeOffset = this.width - e.clientX
   document.addEventListener('mousemove', this.onResizeMove)
   document.addEventListener('mouseup', this.onResizeEnd)
 }
 Panel.prototype.onResizeMove = function(e) {
+  e.preventDefault()
   this.width = Math.max(this.minWidth, this.resizeOffset + e.clientX)
   this.el.style.width = this.width + 'px'
 }
 Panel.prototype.onResizeEnd = function(e) {
+  e.preventDefault()
   document.removeEventListener('mousemove', this.onResizeMove)
   document.removeEventListener('mouseup', this.onResizeEnd)
 }
