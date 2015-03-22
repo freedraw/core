@@ -21,7 +21,7 @@ Panel.prototype.onResizeStart = function(e) {
   document.addEventListener('mouseup', this.onResizeEnd)
 }
 Panel.prototype.onResizeMove = function(e) {
-  this.width = Math.max(this.minWidth, resizeOffset + e.clientX)
+  this.width = Math.max(this.minWidth, this.resizeOffset + e.clientX)
   this.el.style.width = this.width + 'px'
 }
 Panel.prototype.onResizeEnd = function(e) {
