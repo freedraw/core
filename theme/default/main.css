@@ -34,7 +34,7 @@ html, body {
   background: rgb(242, 242, 242);
 }
 .inspector-panel {
-  position: relative;
+  width: 213px;
   border-left: 1px solid rgb(184, 184, 184);
 }
 

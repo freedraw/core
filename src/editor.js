@@ -5,14 +5,13 @@ function Editor() {
   this.layersPanel = new Panel(this, 215, h('.layers-panel', [
     h('.panel-header')
   ]))
-  this.inspectorPanel = new Panel(this, 215, h('.inspector-panel', [
-    h('.panel-header')
-  ]))
 
   this.el = h('.editor', [
     this.layersPanel.el,
     h('.canvas'),
-    this.inspectorPanel.el
+    h('.inspector-panel', [
+      h('.panel-header')
+    ])
   ])
 }
 
