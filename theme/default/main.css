@@ -12,3 +12,13 @@ html, body {
   -webkit-flex-direction: row;
   height: 100%;
 }
+
+.layers-panel {
+  width: 200px;
+}
+.canvas {
+  -webkit-flex: 1;
+}
+.inspector-panel {
+  width: 200px;
+}
