@@ -15,6 +15,7 @@ html, body {
 }
 
 .layers-panel {
+  position: relative;
   border-right: 1px solid rgb(184, 184, 184);
 }
 .canvas {
@@ -22,6 +23,7 @@ html, body {
   background: rgb(242, 242, 242);
 }
 .inspector-panel {
+  position: relative;
   border-left: 1px solid rgb(184, 184, 184);
 }
 
@@ -31,4 +33,10 @@ html, body {
   height: 100%;
   width: 5px;
   cursor: col-resize;
+}
+.layers-panel > .panel-resizer {
+  right: -3px;
+}
+.inspector-panel > .panel-resizer {
+  left: -3px;
 }
