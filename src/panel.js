@@ -1,4 +1,5 @@
 var h = require('html')
+var cursor = require('cursor')
 
 function Panel(editor, width, el) {
   this.editor = editor
@@ -18,6 +19,7 @@ function Panel(editor, width, el) {
 Panel.prototype.onResizeStart = function(e) {
   e.preventDefault()
   this.resizeOffset = this.width - e.clientX
+  cursor.push('col-resize')
   document.addEventListener('mousemove', this.onResizeMove)
   document.addEventListener('mouseup', this.onResizeEnd)
 }
@@ -30,6 +32,7 @@ Panel.prototype.onResizeEnd = function(e) {
   e.preventDefault()
   document.removeEventListener('mousemove', this.onResizeMove)
   document.removeEventListener('mouseup', this.onResizeEnd)
+  cursor.pop()
 }
 
 exports = Panel
