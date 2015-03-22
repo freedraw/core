@@ -17,4 +17,12 @@ Editor.prototype.start = function() {
   return this
 }
 
+Editor.prototype.getData = function() {
+  throw new Error("Unimplemented")
+}
+
+Error.prototype.loadData = function() {
+  throw new Error("Unimplemented")
+}
+
 exports = Editor
