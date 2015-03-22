@@ -25,7 +25,7 @@ html, body {
   height: 100%;
 }
 
-.layers-panel {
+.layers.panel {
   position: relative;
   border-right: 1px solid rgb(184, 184, 184);
 }
@@ -33,16 +33,31 @@ html, body {
   -webkit-flex: 1;
   background: rgb(242, 242, 242);
 }
-.inspector-panel {
+.inspector.panel {
   width: 213px;
   border-left: 1px solid rgb(184, 184, 184);
 }
 
+/* MARK: - Panels */
+
+.panel {
+  display: -webkit-flex;
+  -webkit-flex-direction: column;
+  background: rgb(230, 230, 230);
+  font-size: 11px;
+  letter-spacing: .035em;
+}
 .panel-header {
   border-bottom: 1px solid rgb(184, 184, 184);
   background: rgb(245, 245, 245);
   height: 26px;
 }
+.panel-content {
+  -webkit-flex: 1;
+  overflow-x: hidden;
+  overflow-y: auto;
+}
+
 .panel-resizer {
   position: absolute;
   top: 0;
@@ -50,9 +65,60 @@ html, body {
   width: 5px;
   cursor: col-resize;
 }
-.layers-panel > .panel-resizer {
+.layers.panel > .panel-resizer {
   right: -3px;
 }
-.inspector-panel > .panel-resizer {
+.inspector.panel > .panel-resizer {
   left: -3px;
+}
+
+/* MARK: - Inspector */
+
+.inspector section {
+  padding: 8px 8px 9px;
+  position: relative;
+}
+.inspector section::after {
+  content: '';
+  display: block;
+  background: linear-gradient(to right, rgb(184, 184, 184), rgba(184, 184, 184, 0));
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  height: 1px;
+}
+.inspector .matrix {
+  display: table;
+  width: 100%;
+  box-sizing: border-box;
+  table-layout: fixed;
+  padding-bottom: 4px;
+}
+.inspector .matrix > .row {
+  display: table-row;
+}
+.inspector .matrix > .row > * {
+  display: table-cell;
+}
+.inspector .matrix .mid {
+  width: 16px;
+}
+.inspector .matrix .field {
+  width: 57px;
+}
+.inspector .matrix .field > input {
+  margin: 0;
+  width: 57px;
+  height: 18px;
+  box-sizing: border-box;
+  padding: 0 3px;
+  border: .5px solid rgb(172, 172, 172);
+  box-shadow: inset 0 0 1px rgba(0, 0, 0, .08);
+}
+.inspector .matrix .field > label {
+  display: block;
+  padding: 2px 0 5px;
+  text-align: center;
+  font-size: 9px;
 }
