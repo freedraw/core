@@ -16,31 +16,31 @@ function Editor() {
           h('.row', [
             h('label', ['Position']),
             h('.field', [
-              h('input'),
+              h('input', {type: 'number'}),
               h('label', ['X'])
             ]),
             h('.mid'),
             h('.field', [
-              h('input'),
+              h('input', {type: 'number'}),
               h('label', ['Y'])
             ])
           ]),
           h('.row', [
             h('label', ['Size']),
             h('.field', [
-              h('input'),
+              h('input', {type: 'number'}),
               h('label', ['Width'])
             ]),
             h('.mid'),
             h('.field', [
-              h('input'),
+              h('input', {type: 'number'}),
               h('label', ['Height'])
             ])
           ]),
           h('.row', [
             h('label', ['Transform']),
             h('.field', [
-              h('input'),
+              h('input', {type: 'number'}),
               h('label', ['Rotate'])
             ]),
             h('.mid'),
