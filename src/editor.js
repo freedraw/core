@@ -21,7 +21,7 @@ Editor.prototype.getData = function() {
   throw new Error("Unimplemented")
 }
 
-Error.prototype.loadData = function() {
+Editor.prototype.loadData = function() {
   throw new Error("Unimplemented")
 }
 
