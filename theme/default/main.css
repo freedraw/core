@@ -3,3 +3,12 @@ html, body {
   height: 100%;
   margin: 0;
 }
+
+
+/* MARK: - Editor */
+
+.editor {
+  display: -webkit-flex;
+  -webkit-flex-direction: row;
+  height: 100%;
+}
