@@ -17,11 +17,11 @@ Editor.prototype.start = function() {
   return this
 }
 
-Editor.prototype.getData = function() {
+Editor.prototype.getData = function(type) {
   throw new Error("Unimplemented")
 }
 
-Editor.prototype.loadData = function() {
+Editor.prototype.loadData = function(type, data) {
   throw new Error("Unimplemented")
 }
 
