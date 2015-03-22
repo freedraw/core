@@ -15,12 +15,12 @@ html, body {
 }
 
 .layers-panel {
-  width: 200px;
+  width: 215px;
 }
 .canvas {
   -webkit-flex: 1;
   background: rgb(242, 242, 242);
 }
 .inspector-panel {
-  width: 200px;
+  width: 215px;
 }
