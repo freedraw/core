@@ -1,7 +1,11 @@
 var h = require('html')
 
 function Editor() {
-  this.el = h('.editor')
+  this.el = h('.editor', [
+    h('.layers-panel'),
+    h('.canvas'),
+    h('.inspector-panel')
+  ])
 }
 
 Editor.prototype.start = function() {
