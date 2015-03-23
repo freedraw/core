@@ -24,6 +24,12 @@ Canvas.prototype.onMagnify = function(e) {
   this.zoomBy(e.magnification, e.clientX, e.clientY)
 }
 
+Canvas.prototype.scrollBy = function(deltaX, deltaY) {
+  this.centerX += deltaX * this.scale
+  this.centerY += deltaY * this.scale
+  this.updateViewBox()
+}
+
 Canvas.prototype.zoomBy = function(delta, x, y) {
   var viewport = this.el.getBoundingClientRect()
   this.scale /= 1 + delta
