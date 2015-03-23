@@ -186,6 +186,9 @@ input[type=range]:disabled {
 
 /* MARK: - Inspector */
 
+.inspector .panel-content {
+  margin-bottom: -1px;
+}
 .inspector section {
   padding: 8px 8px 9px;
   position: relative;
