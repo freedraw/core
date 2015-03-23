@@ -58,10 +58,12 @@ Canvas.prototype.scrollBy = function(deltaX, deltaY) {
 Canvas.prototype.zoomBy = function(delta, x, y) {
   var viewport = this.el.getBoundingClientRect()
   this.scale *= 1 + delta
-  var dx = (viewport.left + viewport.width / 2 - x) / this.scale
-  var dy = (viewport.top + viewport.height / 2 - y) / this.scale
-  this.centerX -= delta * dx
-  this.centerY -= delta * dy
+  if (x != null) {
+    var dx = (viewport.left + viewport.width / 2 - x) / this.scale
+    var dy = (viewport.top + viewport.height / 2 - y) / this.scale
+    this.centerX -= delta * dx
+    this.centerY -= delta * dy
+  }
   this.updateViewBox()
 }
 
