@@ -54,6 +54,45 @@ function Editor() {
               h('label', ['Flip'])
             ])
           ])
+        ]),
+        h('section.matrix', [
+          h('.row', [
+            h('label', ['Opacity']),
+            h('.slider', [
+              h('input', {type: 'range', disabled: true})
+            ]),
+            h('.field', [
+              h('input', {type: 'number', readOnly: true})
+            ])
+          ]),
+          h('.row', [
+            h('label', ['Blending']),
+            h('.field', [
+              h('select', {disabled: true}, [
+                h('option', ['Normal']),
+                h('hr'),
+                h('option', ['Darken']),
+                h('option', ['Multiply']),
+                h('option', ['Color Burn']),
+                h('hr'),
+                h('option', ['Lighten']),
+                h('option', ['Screen']),
+                h('option', ['Color Dodge']),
+                h('hr'),
+                h('option', ['Overlay']),
+                h('option', ['Soft Light']),
+                h('option', ['Hard Light']),
+                h('hr'),
+                h('option', ['Difference']),
+                h('option', ['Exclusion']),
+                h('hr'),
+                h('option', ['Hue']),
+                h('option', ['Saturation']),
+                h('option', ['Color']),
+                h('option', ['Luminosity'])
+              ])
+            ])
+          ])
         ])
       ])
     ])
