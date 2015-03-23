@@ -93,7 +93,12 @@ function Editor() {
               ])
             ])
           ])
-        ])
+        ]),
+        h('section', [h('h1', ['Fills'])]),
+        h('section', [h('h1', ['Borders'])]),
+        h('section', [h('h1', ['Shadows'])]),
+        h('section', [h('h1', ['Inner Shadows'])]),
+        h('section', [h('h1', ['Gaussian Blur'])]),
       ])
     ])
   ])
