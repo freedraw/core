@@ -3,6 +3,7 @@ html, body {
   height: 100%;
   margin: 0;
   background: rgb(236, 236, 236);
+  overflow: hidden;
   -webkit-user-select: none;
 }
 
