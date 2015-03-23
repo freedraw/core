@@ -25,6 +25,7 @@ function Canvas() {
   this.el.addEventListener('wheel', this.onWheel.bind(this))
 
   commands.on('zoom0', this.zoomTo.bind(this, 1))
+  commands.on('zoomCenter', this.zoomCenter, this)
   commands.on('zoomIn', this.zoomBy.bind(this, ZOOM_FACTOR - 1))
   commands.on('zoomOut', this.zoomBy.bind(this, 1 / ZOOM_FACTOR - 1))
 }
