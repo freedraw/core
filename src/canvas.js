@@ -60,6 +60,10 @@ Canvas.prototype.zoomBy = function(delta, x, y) {
   this.updateViewBox()
 }
 
+Canvas.prototype.zoomTo = function(scale, x, y) {
+  this.zoomBy(scale / this.scale - 1)
+}
+
 Canvas.prototype.updateViewBox = function() {
   var box = this.svg.viewBox.baseVal
   var viewport = this.el.getBoundingClientRect()
