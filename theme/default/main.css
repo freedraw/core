@@ -46,6 +46,9 @@ input[type=number]:hover::-webkit-inner-spin-button,
 input[type=number]:focus::-webkit-inner-spin-button {
   display: block;
 }
+input[type=number][readonly]::-webkit-inner-spin-button {
+  display: none;
+}
 
 button {
   position: relative;
