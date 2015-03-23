@@ -168,6 +168,11 @@ input[type=range]:disabled {
   overflow-x: hidden;
   overflow-y: auto;
 }
+.panel-footer {
+  border-top: 1px solid rgb(219, 219, 219);
+  background: linear-gradient(rgb(251, 251, 251), rgb(239, 239, 239));
+  height: 31px;
+}
 
 .panel-resizer {
   position: absolute;
