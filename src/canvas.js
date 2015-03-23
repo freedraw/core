@@ -75,7 +75,7 @@ Canvas.prototype.zoomCenter = function() {
   var bb = this.svg.getBBox()
   this.centerX = bb.x + bb.width / 2
   this.centerY = bb.y + bb.height / 2
-  this.scale = Math.min(viewport.width * ZOOM_CENTER_SPACE / bb.width, viewport.height * ZOOM_CENTER_SPACE / bb.height)
+  this.scale = Math.max(ZOOM_MIN, Math.min(ZOOM_MAX, viewport.width * ZOOM_CENTER_SPACE / bb.width, viewport.height * ZOOM_CENTER_SPACE / bb.height))
   this.updateViewBox()
 }
 
