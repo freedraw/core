@@ -19,8 +19,11 @@ html, body {
 
 /* MARK: - Controls */
 
+input,
 input[type=number],
-input[type=text] {
+input[type=text],
+input[type=password],
+input[type=search] {
   margin: 0;
   padding: 0;
   box-sizing: border-box;
