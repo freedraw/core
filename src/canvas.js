@@ -23,15 +23,8 @@ function Canvas() {
   this.el.addEventListener('magnify', this.onMagnify.bind(this))
   this.el.addEventListener('wheel', this.onWheel.bind(this))
 
-  commands.on('zoomIn', function() {
-    this.scale *= ZOOM_FACTOR
-    this.updateViewBox()
-  }.bind(this))
-
-  commands.on('zoomOut', function() {
-    this.scale /= ZOOM_FACTOR
-    this.updateViewBox()
-  }.bind(this))
+  commands.on('zoomIn', this.zoomBy.bind(this, ZOOM_FACTOR - 1))
+  commands.on('zoomOut', this.zoomBy.bind(this, 1 / ZOOM_FACTOR - 1))
 }
 
 Canvas.prototype.onWheel = function(e) {
