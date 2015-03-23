@@ -15,6 +15,19 @@ function Canvas() {
   this.centerX = 0
   this.centerY = 0
   this.scale = 1
+
+  this.el.addEventListener('magnify', this.onMagnify.bind(this))
+}
+
+Canvas.prototype.onMagnify = function(e) {
+  var viewport = this.el.getBoundingClientRect()
+  e.stopPropagation()
+  this.scale /= 1 + e.magnification
+  var dx = this.scale * (viewport.left + viewport.width / 2 - e.clientX)
+  var dy = this.scale * (viewport.top + viewport.height / 2 - e.clientY)
+  this.centerX -= e.magnification * dx
+  this.centerY -= e.magnification * dy
+  this.updateViewBox()
 }
 
 Canvas.prototype.updateViewBox = function() {
