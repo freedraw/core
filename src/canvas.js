@@ -17,11 +17,13 @@ function Canvas() {
         stroke: 'black',
         strokeWidth: '2px'
       }}),
-      svg('circle', {cx: 50, cy: 40, r: 60, style: {
-        fill: 'yellow',
-        stroke: 'black',
-        strokeWidth: '1px'
-      }})
+      svg('g', {transform: 'translate(30,-100) scale(.5,2)'}, [
+        svg('ellipse', {cx: 50, cy: 40, rx: 60, ry: 80, style: {
+          fill: 'yellow',
+          stroke: 'black',
+          strokeWidth: '1px'
+        }})
+      ])
     ]),
     this.ui = svg('svg', {style: {pointerEvents: 'none'}}, [
       this.highlightPath = svg('path', {style: {
@@ -140,21 +142,27 @@ Canvas.prototype.highlightObject = function(object) {
 
   switch (object.localName) {
     case 'circle':
-      var r = object.r.baseVal.value
+    case 'ellipse':
+      if (object.localName === 'ellipse') {
+        var rx = object.rx.baseVal.value
+        var ry = object.ry.baseVal.value
+      } else {
+        rx = ry = object.r.baseVal.value
+      }
       var cx = object.cx.baseVal.value
       var cy = object.cy.baseVal.value
 
-      var major = new Vec2(cx + r, cy).transform(ctm)
-      var major2 = new Vec2(cx - r, cy).transform(ctm)
-      var minor = new Vec2(cx, cy + r).transform(ctm)
-      var minor2 = new Vec2(cx, cy - r).transform(ctm)
+      var major = new Vec2(cx + rx, cy).transform(ctm)
+      var major2 = new Vec2(cx - rx, cy).transform(ctm)
+      var minor = new Vec2(cx, cy + ry).transform(ctm)
+      var minor2 = new Vec2(cx, cy - ry).transform(ctm)
 
       var rx = major.sub(major2).length() / 2
       var ry = minor.sub(minor2).length() / 2
 
       list.appendItem(path.createSVGPathSegMovetoAbs(major.x, major.y))
-      list.appendItem(path.createSVGPathSegArcAbs(major2.x, major2.y, rx, ry, 0, true, false))
-      list.appendItem(path.createSVGPathSegArcAbs(major.x, major.y, rx, ry, 0, true, false))
+      list.appendItem(path.createSVGPathSegArcAbs(major2.x, major2.y, rx, ry, 0, false, true))
+      list.appendItem(path.createSVGPathSegArcAbs(major.x, major.y, rx, ry, 0, false, true))
       break
   }
 }
