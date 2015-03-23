@@ -47,6 +47,35 @@ input[type=number][readonly]::-webkit-inner-spin-button {
   display: none;
 }
 
+input[type=range] {
+  background: 0;
+  border: 0;
+  box-shadow: none;
+  -webkit-appearance: none;
+}
+input[type=range]::-webkit-slider-container {
+}
+input[type=range]::-webkit-slider-runnable-track {
+  -webkit-appearance: none;
+  background: rgb(179, 179, 179);
+  height: 3px;
+  border-radius: 100px;
+  border: 0;
+}
+input[type=range]::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  margin: -5px 0;
+  width: 12px;
+  height: 12px;
+  background: #fff;
+  border: .5px solid rgb(172, 172, 172);
+  box-shadow: 0 1px 1px -1px rgba(0, 0, 0, .19);
+  border-radius: 100px;
+}
+input[type=range]:not(:disabled)::-webkit-slider-thumb:active {
+  background: rgb(240, 240, 240);
+}
+
 button {
   position: relative;
   vertical-align: middle;
