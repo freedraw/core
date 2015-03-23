@@ -3,6 +3,8 @@ var svg = require('svg')
 var commands = require('commands')
 var convertWheelUnits = require('convert-wheel-units')
 
+var ZOOM_MAX = 64
+var ZOOM_MIN = .01
 var ZOOM_FACTOR = 1.5
 var ZOOM_CENTER_SPACE = .7
 
@@ -22,6 +24,7 @@ function Canvas() {
   this.scale = 1
 
   this.el.addEventListener('magnify', this.onMagnify.bind(this))
+  this.el.addEventListener('gestureend', this.constrainZoom.bind(this))
   this.el.addEventListener('wheel', this.onWheel.bind(this))
 
   commands.on('zoom0', this.zoomTo.bind(this, 1))
@@ -73,6 +76,14 @@ Canvas.prototype.zoomCenter = function() {
   this.centerX = bb.x + bb.width / 2
   this.centerY = bb.y + bb.height / 2
   this.scale = Math.min(viewport.width * ZOOM_CENTER_SPACE / bb.width, viewport.height * ZOOM_CENTER_SPACE / bb.height)
+  this.updateViewBox()
+}
+
+Canvas.prototype.constrainZoom = function() {
+  if (this.scale < ZOOM_MIN) this.scale = ZOOM_MIN
+  else if (this.scale > ZOOM_MAX) this.scale = ZOOM_MAX
+  else return
+
   this.updateViewBox()
 }
 
