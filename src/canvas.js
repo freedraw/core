@@ -1,6 +1,9 @@
 var h = require('html')
 var svg = require('svg')
+var commands = require('commands')
 var convertWheelUnits = require('convert-wheel-units')
+
+var ZOOM_FACTOR = 1.5
 
 function Canvas() {
   this.el = h('.canvas', [
@@ -19,6 +22,16 @@ function Canvas() {
 
   this.el.addEventListener('magnify', this.onMagnify.bind(this))
   this.el.addEventListener('wheel', this.onWheel.bind(this))
+
+  commands.on('zoomIn', function() {
+    this.scale *= ZOOM_FACTOR
+    this.updateViewBox()
+  }.bind(this))
+
+  commands.on('zoomOut', function() {
+    this.scale /= ZOOM_FACTOR
+    this.updateViewBox()
+  }.bind(this))
 }
 
 Canvas.prototype.onWheel = function(e) {
