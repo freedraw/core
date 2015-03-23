@@ -29,7 +29,11 @@ input[type=search] {
   padding: 0;
   box-sizing: border-box;
   border: .5px solid rgb(172, 172, 172);
-  box-shadow: inset 0 0 1px rgba(0, 0, 0, .08);
+  background:
+    linear-gradient(to bottom, rgb(240, 240, 240) .5px, transparent .5px),
+    linear-gradient(to right , rgb(240, 240, 240) .5px, transparent .5px),
+    linear-gradient(to left  , rgb(240, 240, 240) .5px, transparent .5px),
+    linear-gradient(to top   , rgb(240, 240, 240) .5px, transparent .5px) #fff;
 }
 
 input[type=number]::-webkit-outer-spin-button {
