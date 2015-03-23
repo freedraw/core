@@ -1,10 +1,13 @@
-var css = require('css')
-css.load('theme/default/main.css')
-
 var Editor = require('editor')
-exports = new Editor().start()
+var css = require('css')
+require('promise-extra')
 
+exports = new Editor()
 Hooks.getData = exports.getData.bind(exports)
 Hooks.loadData = exports.loadData.bind(exports)
+
+css.load('theme/default/main.css').then(function() {
+  exports.start()
+}).done()
 
 Native.done()
