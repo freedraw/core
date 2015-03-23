@@ -4,6 +4,7 @@ html, body {
   margin: 0;
   background: rgb(236, 236, 236);
   overflow: hidden;
+  cursor: default;
   -webkit-user-select: none;
 }
 
