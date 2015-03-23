@@ -40,6 +40,10 @@ button {
   border-radius: 3px;
   box-shadow: 0 1px 1px -1px rgba(0, 0, 0, .19);
 }
+button.icon16 {
+  width: 28px;
+  height: 18px;
+}
 button:active {
   background: linear-gradient(#fff .5px, transparent .5px), linear-gradient(rgb(230, 230, 230), rgb(221, 221, 221));
 }

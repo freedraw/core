@@ -46,8 +46,10 @@ function Editor() {
             h('.mid'),
             h('.field', [
               h('.input', [
-                h('button'),
-                h('button')
+                h('.segmented', [
+                  h('button.icon16'),
+                  h('button.icon16')
+                ])
               ]),
               h('label', ['Flip'])
             ])
