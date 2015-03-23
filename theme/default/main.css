@@ -62,7 +62,7 @@ button.icon16 {
   width: 28px;
   height: 18px;
 }
-button:active {
+button:not(:disabled):active {
   background: linear-gradient(#fff .5px, transparent .5px), linear-gradient(rgb(230, 230, 230), rgb(221, 221, 221));
 }
 button:focus {
