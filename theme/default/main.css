@@ -28,6 +28,42 @@ input[type=text] {
   box-shadow: inset 0 0 1px rgba(0, 0, 0, .08);
 }
 
+button {
+  margin: 0;
+  padding: 0;
+  padding: 1px 5px;
+  background: #fff;
+  border: .5px solid rgb(172, 172, 172);
+  border-radius: 3px;
+  box-shadow: 0 1px 1px -1px rgba(0, 0, 0, .19);
+}
+button:active {
+  background: linear-gradient(#fff .5px, transparent .5px), linear-gradient(rgb(230, 230, 230), rgb(221, 221, 221));
+}
+
+.segmented {
+  display: inline-block;
+  border-radius: 3px;
+  box-shadow: 0 1px 1px -1px rgba(0, 0, 0, .19);
+}
+.segmented > button {
+  border-radius: 0;
+  border-left: 0;
+  border-right: 0;
+  box-shadow: inset -1px 0 rgb(229, 229, 229);
+}
+.segmented > button:first-child {
+  border-top-left-radius: 3px;
+  border-bottom-left-radius: 3px;
+  border-left: .5px solid rgb(172, 172, 172);
+}
+.segmented > button:last-child {
+  border-top-right-radius: 3px;
+  border-bottom-right-radius: 3px;
+  border-right: .5px solid rgb(172, 172, 172);
+  box-shadow: none;
+}
+
 
 /* MARK: - Editor */
 
