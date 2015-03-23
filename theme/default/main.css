@@ -142,6 +142,7 @@ input[type=range]:disabled {
 }
 .canvas {
   -webkit-flex: 1;
+  position: relative;
   background: rgb(242, 242, 242);
 }
 .inspector.panel {
@@ -262,4 +263,13 @@ input[type=range]:disabled {
   padding-top: 2px;
   text-align: center;
   font-size: 9px;
+}
+
+
+/* MARK: - Canvas */
+
+.canvas > svg {
+  position: absolute;
+  width: 100%;
+  height: 100%;
 }
