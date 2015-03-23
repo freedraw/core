@@ -24,7 +24,11 @@ function Canvas() {
 Canvas.prototype.onWheel = function(e) {
   var viewport = this.el.getBoundingClientRect()
   var delta = convertWheelUnits(e, viewport.width, viewport.height, 0)
-  this.scrollBy(delta.x, delta.y)
+  if (e.metaKey || e.ctrlKey) {
+    this.zoomBy(delta.y / 120, e.clientX, e.clientY)
+  } else {
+    this.scrollBy(delta.x, delta.y)
+  }
 }
 
 Canvas.prototype.onMagnify = function(e) {
