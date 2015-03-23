@@ -1,14 +1,18 @@
 var slice = [].slice
 
 exports = function mouseDispatcher(name, fn) {
-  return function(x, y) {
-    var target = document.elementFromPoint(x, y) || document
+  return function(clientX, clientY, shiftKey, ctrlKey, altKey, metaKey) {
+    var target = document.elementFromPoint(clientX, clientY) || document
     var event = new MouseEvent(name, {
       bubbles: true,
-      clientX: x,
-      clientY: y
+      clientX: clientX,
+      clientY: clientY,
+      shiftKey: shiftKey,
+      ctrlKey: ctrlKey,
+      altKey: altKey,
+      metaKey: metaKey
     })
-    fn.apply(event, slice.call(arguments, 2))
+    fn.apply(event, slice.call(arguments, 6))
     target.dispatchEvent(event)
   }
 }
