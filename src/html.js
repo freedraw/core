@@ -13,7 +13,15 @@ exports = function html(spec, attrs, children) {
   var el = document.createElement(name)
   if (className) el.className = className
   if (attrs) for (var k in attrs) {
-    el[k] = attrs[k]
+    var v = attrs[k]
+    if (k === 'style') {
+      var style = el.style
+      for (var p in v) {
+        style[p] = v[p]
+      }
+    } else {
+      el[k] = v
+    }
   }
   if (children) for (var i = 0, l = children.length; i < l; i++) {
     var child = children[i]
