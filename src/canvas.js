@@ -4,6 +4,7 @@ var commands = require('commands')
 var convertWheelUnits = require('convert-wheel-units')
 
 var ZOOM_FACTOR = 1.5
+var ZOOM_CENTER_SPACE = .7
 
 function Canvas() {
   this.el = h('.canvas', [
@@ -63,6 +64,15 @@ Canvas.prototype.zoomBy = function(delta, x, y) {
 
 Canvas.prototype.zoomTo = function(scale, x, y) {
   this.zoomBy(scale / this.scale - 1)
+}
+
+Canvas.prototype.zoomCenter = function() {
+  var viewport = this.el.getBoundingClientRect()
+  var bb = this.svg.getBBox()
+  this.centerX = bb.x + bb.width / 2
+  this.centerY = bb.y + bb.height / 2
+  this.scale = Math.min(viewport.width * ZOOM_CENTER_SPACE / bb.width, viewport.height * ZOOM_CENTER_SPACE / bb.height)
+  this.updateViewBox()
 }
 
 Canvas.prototype.updateViewBox = function() {
