@@ -203,6 +203,12 @@ input[type=range]:disabled {
   width: 100%;
   height: 1px;
 }
+.inspector h1 {
+  font-weight: bold;
+  font-size: inherit;
+  margin: 0;
+  color: rgb(81, 81, 81);
+}
 .inspector .matrix {
   display: table;
   width: 100%;
