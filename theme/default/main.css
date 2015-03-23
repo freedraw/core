@@ -44,6 +44,7 @@ input[type=number]:focus::-webkit-inner-spin-button {
 }
 
 button {
+  position: relative;
   vertical-align: middle;
   margin: 0;
   padding: 0;
@@ -60,6 +61,9 @@ button.icon16 {
 }
 button:active {
   background: linear-gradient(#fff .5px, transparent .5px), linear-gradient(rgb(230, 230, 230), rgb(221, 221, 221));
+}
+button:focus {
+  z-index: 1;
 }
 
 .segmented {
