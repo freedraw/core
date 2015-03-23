@@ -9,7 +9,7 @@ var ZOOM_CENTER_SPACE = .7
 function Canvas() {
   this.el = h('.canvas', [
     this.svg = svg('svg', [
-      svg('circle', {cx: 50, cy: 50, r: 30, style: {
+      svg('circle', {cx: 0, cy: 0, r: 30, style: {
         fill: 'red',
         stroke: 'black',
         strokeWidth: '2px'
