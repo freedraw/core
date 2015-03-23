@@ -23,7 +23,13 @@ function Editor() {
 
 Editor.prototype.start = function() {
   document.body.appendChild(this.el)
+  addEventListener('resize', this.onResize.bind(this))
+  this.onResize()
   return this
+}
+
+Editor.prototype.onResize = function() {
+  this.canvas.updateViewBox()
 }
 
 Editor.prototype.getData = function(type) {
