@@ -3,7 +3,9 @@ var Panel = require('panel')
 
 function Editor() {
   this.layersPanel = new Panel(215, h('.layers panel', [
-    h('.panel-header')
+    h('.panel-header'),
+    h('.panel-content'),
+    h('.panel-footer')
   ]))
 
   this.el = h('.editor', [
@@ -99,7 +101,8 @@ function Editor() {
         h('section', [h('h1', ['Shadows'])]),
         h('section', [h('h1', ['Inner Shadows'])]),
         h('section', [h('h1', ['Gaussian Blur'])]),
-      ])
+      ]),
+      h('.panel-footer')
     ])
   ])
 }
