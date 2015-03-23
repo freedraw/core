@@ -1,8 +1,7 @@
 var h = require('html')
 var cursor = require('cursor')
 
-function Panel(editor, width, el) {
-  this.editor = editor
+function Panel(width, el) {
   this.width = width
   this.minWidth = 165
 

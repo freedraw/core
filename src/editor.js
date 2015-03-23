@@ -2,7 +2,7 @@ var h = require('html')
 var Panel = require('panel')
 
 function Editor() {
-  this.layersPanel = new Panel(this, 215, h('.layers panel', [
+  this.layersPanel = new Panel(215, h('.layers panel', [
     h('.panel-header')
   ]))
 
