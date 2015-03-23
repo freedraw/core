@@ -1,5 +1,6 @@
 var Editor = require('editor')
 var css = require('css')
+require('events')
 require('promise-extra')
 
 exports = new Editor()
