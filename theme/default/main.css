@@ -52,6 +52,7 @@ button {
   border: .5px solid rgb(172, 172, 172);
   border-radius: 3px;
   box-shadow: 0 1px 1px -1px rgba(0, 0, 0, .19);
+  outline-offset: -2px;
 }
 button.icon16 {
   width: 28px;
