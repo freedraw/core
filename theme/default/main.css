@@ -98,7 +98,8 @@ button:not(:disabled):active {
 button:focus {
   z-index: 1;
 }
-button:disabled {
+button:disabled,
+input[type=range]:disabled {
   opacity: .57;
 }
 
