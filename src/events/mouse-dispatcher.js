@@ -12,7 +12,7 @@ exports = function mouseDispatcher(name, fn) {
       altKey: altKey,
       metaKey: metaKey
     })
-    fn.apply(event, slice.call(arguments, 6))
+    if (fn) fn.apply(event, slice.call(arguments, 6))
     target.dispatchEvent(event)
   }
 }

@@ -1,1 +1,1 @@
-require('./magnify')
+require('./gestures')
