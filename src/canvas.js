@@ -37,16 +37,16 @@ Canvas.prototype.onMagnify = function(e) {
 }
 
 Canvas.prototype.scrollBy = function(deltaX, deltaY) {
-  this.centerX += deltaX * this.scale
-  this.centerY += deltaY * this.scale
+  this.centerX += deltaX / this.scale
+  this.centerY += deltaY / this.scale
   this.updateViewBox()
 }
 
 Canvas.prototype.zoomBy = function(delta, x, y) {
   var viewport = this.el.getBoundingClientRect()
-  this.scale /= 1 + delta
-  var dx = this.scale * (viewport.left + viewport.width / 2 - x)
-  var dy = this.scale * (viewport.top + viewport.height / 2 - y)
+  this.scale *= 1 + delta
+  var dx = (viewport.left + viewport.width / 2 - x) / this.scale
+  var dy = (viewport.top + viewport.height / 2 - y) / this.scale
   this.centerX -= delta * dx
   this.centerY -= delta * dy
   this.updateViewBox()
@@ -55,8 +55,8 @@ Canvas.prototype.zoomBy = function(delta, x, y) {
 Canvas.prototype.updateViewBox = function() {
   var box = this.svg.viewBox.baseVal
   var viewport = this.el.getBoundingClientRect()
-  var width = this.scale * viewport.width
-  var height = this.scale * viewport.height
+  var width = viewport.width / this.scale
+  var height = viewport.height / this.scale
 
   box.x = this.centerX - width / 2
   box.y = this.centerY - height / 2
