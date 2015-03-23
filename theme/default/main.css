@@ -19,11 +19,7 @@ html, body {
 
 /* MARK: - Controls */
 
-input,
-input[type=number],
-input[type=text],
-input[type=password],
-input[type=search] {
+input {
   vertical-align: middle;
   margin: 0;
   padding: 0;
