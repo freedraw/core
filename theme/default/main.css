@@ -177,19 +177,24 @@ button:disabled {
   padding-bottom: 4px;
 }
 .inspector .matrix > .row {
-  display: table-row;
+  display: -webkit-flex;
+  -webkit-align-items: flex-start;
 }
-.inspector .matrix > .row > * {
-  display: table-cell;
+.inspector .matrix .row > label {
+  width: 65px;
+  box-sizing: border-box;
+  padding: 3px 0;
+  padding-right: 12px;
+  text-align: right;
 }
 .inspector .matrix .mid {
   width: 16px;
 }
 .inspector .matrix .field {
-  width: 57px;
+  -webkit-flex: 1;
 }
 .inspector .matrix .field > input {
-  width: 57px;
+  width: 100%;
   height: 18px;
   padding: 0 3px;
 }
