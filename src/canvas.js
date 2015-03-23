@@ -1,5 +1,6 @@
 var h = require('html')
 var svg = require('svg')
+var convertWheelUnits = require('convert-wheel-units')
 
 function Canvas() {
   this.el = h('.canvas', [
@@ -17,6 +18,13 @@ function Canvas() {
   this.scale = 1
 
   this.el.addEventListener('magnify', this.onMagnify.bind(this))
+  this.el.addEventListener('wheel', this.onWheel.bind(this))
+}
+
+Canvas.prototype.onWheel = function(e) {
+  var viewport = this.el.getBoundingClientRect()
+  var delta = convertWheelUnits(e, viewport.width, viewport.height, 0)
+  this.scrollBy(delta.x, delta.y)
 }
 
 Canvas.prototype.onMagnify = function(e) {
