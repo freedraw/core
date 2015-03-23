@@ -47,8 +47,8 @@ function Editor() {
             h('.field', [
               h('.input', [
                 h('.segmented', [
-                  h('button.icon16'),
-                  h('button.icon16')
+                  h('button.icon16', {disabled: true}),
+                  h('button.icon16', {disabled: true})
                 ])
               ]),
               h('label', ['Flip'])
