@@ -20,13 +20,17 @@ function Canvas() {
 }
 
 Canvas.prototype.onMagnify = function(e) {
-  var viewport = this.el.getBoundingClientRect()
   e.stopPropagation()
-  this.scale /= 1 + e.magnification
-  var dx = this.scale * (viewport.left + viewport.width / 2 - e.clientX)
-  var dy = this.scale * (viewport.top + viewport.height / 2 - e.clientY)
-  this.centerX -= e.magnification * dx
-  this.centerY -= e.magnification * dy
+  this.zoomBy(e.magnification, e.clientX, e.clientY)
+}
+
+Canvas.prototype.zoomBy = function(delta, x, y) {
+  var viewport = this.el.getBoundingClientRect()
+  this.scale /= 1 + delta
+  var dx = this.scale * (viewport.left + viewport.width / 2 - x)
+  var dy = this.scale * (viewport.top + viewport.height / 2 - y)
+  this.centerX -= delta * dx
+  this.centerY -= delta * dy
   this.updateViewBox()
 }
 
