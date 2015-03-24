@@ -21,7 +21,6 @@ Vec2.prototype.transform = function(m) {
 Vec2.prototype.length = function() {
   return Math.sqrt(this.x * this.x + this.y * this.y)
 }
-
 Vec2.prototype.lengthSquared = function() {
   return this.x * this.x + this.y * this.y
 }
@@ -39,6 +38,10 @@ SVGRect.prototype.bottomLeft = function() {
 SVGRect.prototype.bottomRight = function() {
   return new Vec2(this.x + this.width, this.y + this.height)
 }
+
+Vec2.x = new Vec2(1, 0)
+Vec2.y = new Vec2(0, 1)
+Vec2.one = new Vec2(1, 1)
 
 
 exports = Vec2
