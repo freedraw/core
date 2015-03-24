@@ -7,11 +7,9 @@ function Vec2(x, y) {
 Vec2.prototype.add = function(p) {
   return new Vec2(this.x + p.x, this.y + p.y)
 }
-
 Vec2.prototype.sub = function(p) {
   return new Vec2(this.x - p.x, this.y - p.y)
 }
-
 Vec2.prototype.scale = function(f) {
   return new Vec2(this.x * f, this.y * f)
 }
