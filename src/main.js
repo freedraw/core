@@ -1,8 +1,9 @@
 var Editor = require('editor')
 var css = require('css')
+
 require('events')
 require('commands')
-require('promise-extra')
+require('extensions')
 
 exports = new Editor()
 Hooks.getData = exports.getData.bind(exports)

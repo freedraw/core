@@ -1,0 +1,2 @@
+require('./promise')
+require('./svg')
