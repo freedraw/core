@@ -28,4 +28,19 @@ Vec2.prototype.lengthSquared = function() {
   return this.x * this.x + this.y * this.y
 }
 
+
+SVGRect.prototype.topLeft = function() {
+  return new Vec2(this.x, this.y)
+}
+SVGRect.prototype.topRight = function() {
+  return new Vec2(this.x + this.width, this.y)
+}
+SVGRect.prototype.bottomLeft = function() {
+  return new Vec2(this.x, this.y + this.height)
+}
+SVGRect.prototype.bottomRight = function() {
+  return new Vec2(this.x + this.width, this.y + this.height)
+}
+
+
 exports = Vec2
