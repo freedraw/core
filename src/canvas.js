@@ -1,5 +1,5 @@
 var h = require('html')
-var svg = require('svg')
+var svg = require('svg-util')
 var Vec2 = require('vec2')
 var commands = require('commands')
 var convertWheelUnits = require('convert-wheel-units')
