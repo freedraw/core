@@ -26,6 +26,11 @@ function Canvas() {
       ])
     ]),
     this.ui = svg('svg', {style: {pointerEvents: 'none'}}, [
+      this.selectionBox = svg('path', {style: {
+        fill: 'none',
+        stroke: 'rgb(185, 185, 185)',
+        strokeWidth: '0.5px'
+      }}),
       this.highlightPath = svg('path', {style: {
         fill: 'none',
         stroke: 'rgb(68, 192, 255)',
@@ -40,9 +45,11 @@ function Canvas() {
 
   this.mouseX = NaN
   this.mouseY = NaN
+  this.selectedObject = null
   this.highlightedObject = null
 
   this.el.addEventListener('mousemove', this.onMouseMove.bind(this))
+  this.el.addEventListener('mousedown', this.onMouseDown.bind(this))
   this.el.addEventListener('magnify', this.onMagnify.bind(this))
   this.el.addEventListener('gestureend', this.constrainZoom.bind(this))
   this.el.addEventListener('wheel', this.onWheel.bind(this))
@@ -56,7 +63,14 @@ function Canvas() {
 Canvas.prototype.onMouseMove = function(e) {
   this.mouseX = e.clientX
   this.mouseY = e.clientY
-  this.highlightObject(e.target === this.svg ? null : e.target)
+  this.hoverObject(e.target)
+}
+
+Canvas.prototype.onMouseDown = function(e) {
+  this.mouseX = e.clientX
+  this.mouseY = e.clientY
+  this.selectObject(e.target === this.svg ? null : e.target)
+  this.highlightObject(null)
 }
 
 Canvas.prototype.onWheel = function(e) {
@@ -126,8 +140,42 @@ Canvas.prototype.updateViewBox = function() {
 
   if (this.mouseX === this.mouseX) {
     var t = document.elementFromPoint(this.mouseX, this.mouseY)
-    this.highlightObject(t === this.svg ? null : t)
+    this.hoverObject(t)
   }
+  if (this.selectedObject) {
+    this.updateSelectionBox()
+  }
+}
+
+Canvas.prototype.hoverObject = function(object) {
+  this.highlightObject(object === this.svg || object === this.selectedObject ? null : object)
+}
+
+Canvas.prototype.selectObject = function(object) {
+  this.selectedObject = object
+  this.updateSelectionBox()
+}
+
+Canvas.prototype.updateSelectionBox = function() {
+  var object = this.selectedObject
+  var box = this.selectionBox
+  var list = box.pathSegList
+  list.clear()
+  if (!object) return
+
+  var ctm = object.getCTM()
+  var bb = object.getBBox()
+
+  var tl = bb.topLeft().transform(ctm)
+  var tr = bb.topRight().transform(ctm)
+  var br = bb.bottomRight().transform(ctm)
+  var bl = bb.bottomLeft().transform(ctm)
+
+  list.appendItem(box.createSVGPathSegMovetoAbs(tl.x, tl.y))
+  list.appendItem(box.createSVGPathSegLinetoAbs(tr.x, tr.y))
+  list.appendItem(box.createSVGPathSegLinetoAbs(br.x, br.y))
+  list.appendItem(box.createSVGPathSegLinetoAbs(bl.x, bl.y))
+  list.appendItem(box.createSVGPathSegClosePath())
 }
 
 Canvas.prototype.highlightObject = function(object) {
