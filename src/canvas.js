@@ -1,6 +1,8 @@
 var h = require('html')
 var svg = require('svg-util')
 var Vec2 = require('vec2')
+var Rect = require('rect')
+var Matrix = require('matrix')
 var commands = require('commands')
 var convertWheelUnits = require('convert-wheel-units')
 
@@ -10,6 +12,12 @@ var ZOOM_FACTOR = 1.5
 var ZOOM_CENTER_SPACE = .7
 
 function Canvas() {
+  this.selectionHandles = []
+  for (var i = 0; i < 8; i++) {
+    var handle = svg('rect', {class: 'selection-handle handle-' + i, width: 6, height: 6})
+    this.selectionHandles.push(handle)
+  }
+
   this.el = h('.canvas', [
     this.svg = svg('svg', [
       svg('circle', {cx: 0, cy: 0, r: 30, style: {
@@ -17,7 +25,7 @@ function Canvas() {
         stroke: 'black',
         strokeWidth: '2px'
       }}),
-      svg('g', {transform: 'translate(30,-100) scale(.5,2)'}, [
+      svg('g', {transform: 'rotate(30) translate(30,-100) scale(.5,2)'}, [
         svg('ellipse', {cx: 50, cy: 40, rx: 60, ry: 80, style: {
           fill: 'yellow',
           stroke: 'black',
@@ -30,13 +38,15 @@ function Canvas() {
         fill: 'none',
         stroke: 'rgb(185, 185, 185)',
         strokeWidth: '0.5px'
-      }}),
+      }})
+    ].concat(
+      this.selectionHandleGroup = svg('g', {style: {display: 'none'}}, this.selectionHandles),
       this.highlightPath = svg('path', {style: {
         fill: 'none',
         stroke: 'rgb(68, 192, 255)',
         strokeWidth: '2px'
       }})
-    ])
+    ))
   ])
 
   this.centerX = 0
@@ -161,21 +171,35 @@ Canvas.prototype.updateSelectionBox = function() {
   var box = this.selectionBox
   var list = box.pathSegList
   list.clear()
-  if (!object) return
+  if (!object) {
+    this.selectionHandleGroup.style.display = 'none'
+    return
+  }
+  this.selectionHandleGroup.style.display = 'inline'
 
   var ctm = object.getCTM()
   var bb = object.getBBox()
 
   var tl = bb.topLeft().transform(ctm)
+  var tc = bb.topCenter().transform(ctm)
   var tr = bb.topRight().transform(ctm)
+  var rc = bb.rightCenter().transform(ctm)
   var br = bb.bottomRight().transform(ctm)
+  var bc = bb.bottomCenter().transform(ctm)
   var bl = bb.bottomLeft().transform(ctm)
+  var lc = bb.leftCenter().transform(ctm)
 
   list.appendItem(box.createSVGPathSegMovetoAbs(tl.x, tl.y))
   list.appendItem(box.createSVGPathSegLinetoAbs(tr.x, tr.y))
   list.appendItem(box.createSVGPathSegLinetoAbs(br.x, br.y))
   list.appendItem(box.createSVGPathSegLinetoAbs(bl.x, bl.y))
   list.appendItem(box.createSVGPathSegClosePath())
+
+  var angle = tr.sub(tl).angle()
+  ;[tl, tc, tr, rc, br, bc, bl, lc].forEach(function(v, i) {
+    this.selectionHandles[i].replaceTransform(
+      Matrix.translateBy(v).rotate(angle).translate(-3, -3))
+  }, this)
 }
 
 Canvas.prototype.highlightObject = function(object) {

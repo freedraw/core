@@ -273,3 +273,16 @@ input[type=range]:disabled {
   width: 100%;
   height: 100%;
 }
+.selection-handle {
+  stroke: black;
+  stroke-width: .5px;
+  pointer-events: auto;
+}
+.selection-handle.handle-0 {cursor: nw-resize}
+.selection-handle.handle-1 {cursor: n-resize}
+.selection-handle.handle-2 {cursor: ne-resize}
+.selection-handle.handle-3 {cursor: e-resize}
+.selection-handle.handle-4 {cursor: se-resize}
+.selection-handle.handle-5 {cursor: s-resize}
+.selection-handle.handle-6 {cursor: sw-resize}
+.selection-handle.handle-7 {cursor: w-resize}
