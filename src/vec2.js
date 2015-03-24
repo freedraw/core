@@ -1,4 +1,3 @@
-
 function Vec2(x, y) {
   this.x = x
   this.y = y
@@ -24,19 +23,20 @@ Vec2.prototype.length = function() {
 Vec2.prototype.lengthSquared = function() {
   return this.x * this.x + this.y * this.y
 }
+Vec2.prototype.unit = function() {
+  var length = this.length()
+  if (length === 0) return Vec2.x
+  return new Vec2(this.x / length, this.y / length)
+}
+Vec2.prototype.angle = function() {
+  return Math.atan2(this.y, this.x)
+}
 
-
-SVGRect.prototype.topLeft = function() {
-  return new Vec2(this.x, this.y)
-}
-SVGRect.prototype.topRight = function() {
-  return new Vec2(this.x + this.width, this.y)
-}
-SVGRect.prototype.bottomLeft = function() {
-  return new Vec2(this.x, this.y + this.height)
-}
-SVGRect.prototype.bottomRight = function() {
-  return new Vec2(this.x + this.width, this.y + this.height)
+Vec2.prototype.toSVG = function(svg) {
+  var p = svg.createSVGPoint()
+  p.x = this.x
+  p.y = this.y
+  return p
 }
 
 Vec2.x = new Vec2(1, 0)
