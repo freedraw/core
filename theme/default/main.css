@@ -276,6 +276,7 @@ input[type=range]:disabled {
 .selection-handle {
   stroke: black;
   stroke-width: .5px;
+  fill: white;
   pointer-events: auto;
 }
 .selection-handle[data-index='0'] {cursor: nw-resize}
