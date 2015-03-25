@@ -64,7 +64,7 @@ function Canvas() {
 
   this.el.addEventListener('mousemove', this.onMouseMove.bind(this))
   this.el.addEventListener('mousedown', this.onMouseDown.bind(this))
-  this.onMouseUp = this.onMouseUp.bind(this)
+  document.addEventListener('mouseup', this.onMouseUp.bind(this))
   this.el.addEventListener('magnify', this.onMagnify.bind(this))
   this.el.addEventListener('gestureend', this.constrainZoom.bind(this))
   this.el.addEventListener('wheel', this.onWheel.bind(this))
@@ -110,21 +110,17 @@ Canvas.prototype.onMouseDown = function(e) {
   if (t.matches('.selection-handle')) {
     this.dragRect = this.selectedObject.getBBox()
     this.dragHandle = +t.dataset.index
-    document.addEventListener('mouseup', this.onMouseUp)
-    return
-  }
-  if (t === this.selectedObject) {
-    this.dragRect = this.selectedObject.getBBox()
-    this.dragOrigin = new Vec2(this.mouseX, this.mouseY)
-    document.addEventListener('mouseup', this.onMouseUp)
     return
   }
   this.selectObject(t === this.svg ? null : t)
+  if (this.selectedObject) {
+    this.dragRect = this.selectedObject.getBBox()
+    this.dragOrigin = new Vec2(this.mouseX, this.mouseY)
+  }
 }
 
 Canvas.prototype.onMouseUp = function() {
   this.dragRect = this.dragHandle = this.dragOrigin = null
-  document.removeEventListener('mouseup', this.onMouseUp)
 }
 
 Canvas.prototype.onWheel = function(e) {
