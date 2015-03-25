@@ -14,7 +14,7 @@ var ZOOM_CENTER_SPACE = .7
 function Canvas() {
   this.selectionHandles = []
   for (var i = 0; i < 8; i++) {
-    var handle = svg('rect', {class: 'selection-handle handle-' + i, width: 6, height: 6})
+    var handle = svg('rect', {class: 'selection-handle', 'data-index': i, width: 6, height: 6})
     this.selectionHandles.push(handle)
   }
 
