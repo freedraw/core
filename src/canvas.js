@@ -203,7 +203,7 @@ Canvas.prototype.updateViewBox = function() {
 }
 
 Canvas.prototype.hoverObject = function(object) {
-  this.highlightObject(object === this.svg || object === this.selectedObject ? null : object)
+  this.highlightObject(object === this.svg || object === this.selectedObject || object.ownerSVGElement !== this.svg ? null : object)
 }
 
 Canvas.prototype.selectObject = function(object) {
