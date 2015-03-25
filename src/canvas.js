@@ -296,13 +296,14 @@ Canvas.prototype.highlightObject = function(object) {
       var major2 = new Vec2(cx - rx, cy).transform(ctm)
       var minor = new Vec2(cx, cy + ry).transform(ctm)
       var minor2 = new Vec2(cx, cy - ry).transform(ctm)
+      var angle = Vec2.x.transform(ctm).sub(Vec2.zero.transform(ctm)).angle() * 180 / Math.PI
 
       var rx = major.sub(major2).length() / 2
       var ry = minor.sub(minor2).length() / 2
 
       list.appendItem(path.createSVGPathSegMovetoAbs(major.x, major.y))
-      list.appendItem(path.createSVGPathSegArcAbs(major2.x, major2.y, rx, ry, 0, false, true))
-      list.appendItem(path.createSVGPathSegArcAbs(major.x, major.y, rx, ry, 0, false, true))
+      list.appendItem(path.createSVGPathSegArcAbs(major2.x, major2.y, rx, ry, angle, false, true))
+      list.appendItem(path.createSVGPathSegArcAbs(major.x, major.y, rx, ry, angle, false, true))
       return
     case 'rect':
       var rect = new Rect(object.x.baseVal.value, object.y.baseVal.value, object.width.baseVal.value, object.height.baseVal.value)
