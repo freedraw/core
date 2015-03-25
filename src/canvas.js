@@ -177,11 +177,8 @@ Canvas.prototype.zoomCenter = function() {
 }
 
 Canvas.prototype.constrainZoom = function() {
-  if (this.scale < ZOOM_MIN) this.scale = ZOOM_MIN
-  else if (this.scale > ZOOM_MAX) this.scale = ZOOM_MAX
-  else return
-
-  this.updateViewBox()
+  if (this.scale < ZOOM_MIN) this.zoomTo(ZOOM_MIN, this.mouseX, this.mouseY)
+  else if (this.scale > ZOOM_MAX) this.zoomTo(ZOOM_MAX, this.mouseX, this.mouseY)
 }
 
 Canvas.prototype.updateViewBox = function() {
