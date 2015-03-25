@@ -11,6 +11,14 @@ Rect.zero = new Rect(0, 0, 0, 0)
 Rect.bb = function(bb) {
   return new Rect(bb.left, bb.top, bb.width, bb.height)
 }
+Rect.between = function(u, v) {
+  var left, right, top, bottom
+  if (u.x < v.x) { left = u.x; right = v.x }
+  else           { left = v.x; right = u.x }
+  if (u.y < v.y) { top = u.y; bottom = v.y }
+  else           { top = v.y; bottom = u.y }
+  return new Rect(left, top, right - left, bottom - top)
+}
 
 Rect.prototype.union = function(r) {
   if (this.width === 0 || this.height === 0) return r
