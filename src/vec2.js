@@ -25,6 +25,9 @@ Vec2.prototype.scale = function(f) {
 Vec2.prototype.transform = function(m) {
   return new Vec2(m.a * this.x + m.c * this.y + m.e, m.b * this.x + m.d * this.y + m.f)
 }
+Vec2.prototype.reflect = function(u) {
+  return new Vec2(2 * u.x - this.x, 2 * u.y - this.y)
+}
 
 Vec2.prototype.length = function() {
   return Math.sqrt(this.x * this.x + this.y * this.y)
