@@ -29,6 +29,16 @@ Vec2.prototype.reflect = function(u) {
   return new Vec2(2 * u.x - this.x, 2 * u.y - this.y)
 }
 
+Vec2.prototype.distance = function(p) {
+  var dx = this.x - p.x
+  var dy = this.y - p.y
+  return Math.sqrt(dx * dx + dy * dy)
+}
+Vec2.prototype.distanceSquared = function(p) {
+  var dx = this.x - p.x
+  var dy = this.y - p.y
+  return dx * dx + dy * dy
+}
 Vec2.prototype.length = function() {
   return Math.sqrt(this.x * this.x + this.y * this.y)
 }
