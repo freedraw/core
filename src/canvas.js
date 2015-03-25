@@ -78,17 +78,24 @@ Canvas.prototype.onMouseMove = function(e) {
   this.mouseX = e.clientX
   this.mouseY = e.clientY
   if (this.dragRect) {
+    var object = this.selectedObject
+    var preserve = object.localName === 'circle' || e.shiftKey
+
     var ctm = this.selectedObject.getScreenCTM().inverse()
     var v = new Vec2(this.mouseX, this.mouseY).transform(ctm)
-    var rect = this.dragRect.expandHandle(this.dragHandle, v)
-    var object = this.selectedObject
+    var rect = this.dragRect.expandHandle(this.dragHandle, v, preserve)
     switch (object.localName) {
       case 'ellipse':
+      case 'circle':
         var c = rect.center()
         object.cx.baseVal.value = c.x
         object.cy.baseVal.value = c.y
-        object.rx.baseVal.value = rect.width / 2
-        object.ry.baseVal.value = rect.height / 2
+        if (object.localName === 'circle') {
+          object.r.baseVal.value = rect.width / 2
+        } else {
+          object.rx.baseVal.value = rect.width / 2
+          object.ry.baseVal.value = rect.height / 2
+        }
         break
     }
     this.updateSelectionBox()
