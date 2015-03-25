@@ -292,7 +292,11 @@ Canvas.prototype.highlightObject = function(object) {
   var list = path.pathSegList
   list.clear()
 
-  if (!object) return
+  if (!object) {
+    path.style.display = 'none'
+    return
+  }
+  path.style.display = 'inline'
   var ctm = object.getCTM()
 
   switch (object.localName) {
