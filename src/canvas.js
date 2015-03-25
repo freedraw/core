@@ -220,9 +220,11 @@ Canvas.prototype.updateSelectionBox = function() {
   var list = box.pathSegList
   list.clear()
   if (!object) {
+    this.selectionBox.style.display = 'none'
     this.selectionHandleGroup.style.display = 'none'
     return
   }
+  this.selectionBox.style.display = 'inline'
 
   var ctm = object.getCTM()
   var bb = object.getBBox()
