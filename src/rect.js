@@ -99,12 +99,14 @@ Rect.prototype.handlePoint = function(i) {
     case 7: return this.leftCenter()
   }
 }
-Rect.prototype.expandHandle = function(i, v, preserve) {
+Rect.prototype.expandHandle = function(i, v, preserve, center) {
   var u = this.handlePoint(i + 4)
   if (i % 2) {
     if (i % 4 === 1) {
+      if (center) u = new Vec2(u.x, 2 * this.y + this.height - v.y)
       return Rect.edgeWidth(u, v, preserve ? this.width / this.height * Math.abs(v.y - u.y) : this.width)
     }
+    if (center) u = new Vec2(2 * this.x + this.width - v.x, u.y)
     return Rect.edgeHeight(u, v, preserve ? this.height / this.width * Math.abs(v.x - u.x) : this.height)
   }
   if (preserve) {
@@ -113,7 +115,7 @@ Rect.prototype.expandHandle = function(i, v, preserve) {
     var h = Math.abs(u.y - v.y)
     v = new Vec2((v.x < u.x ? -1 : 1) * Math.min(w, h * aspect), (v.y < u.y ? -1 : 1) * Math.min(w / aspect, h)).add(u)
   }
-  return Rect.between(u, v)
+  return Rect.between(center ? v.reflect(this.center()) : u, v)
 }
 
 Rect.prototype.lerp = function(f, r) {
