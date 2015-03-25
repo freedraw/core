@@ -23,3 +23,10 @@ exports.pop = function() {
     el.style.display = 'none'
   }
 }
+
+var angleTowards = ['e-resize', 'ne-resize', 'n-resize', 'nw-resize', 'w-resize', 'sw-resize', 's-resize', 'se-resize']
+exports.resizeTowards = function(angle) {
+  angle = angle / (Math.PI * 2) % 1
+  if (angle < 0) angle += 1
+  return angleTowards[Math.round(angle * angleTowards.length) % angleTowards.length]
+}
