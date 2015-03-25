@@ -30,6 +30,11 @@ function Canvas() {
           fill: 'yellow',
           stroke: 'black',
           strokeWidth: '1px'
+        }}),
+        svg('rect', {x: -230, y: 90, width: 160, height: 40, style: {
+          fill: 'hotpink',
+          stroke: 'black',
+          strokeWidth: '2px'
         }})
       ])
     ]),
