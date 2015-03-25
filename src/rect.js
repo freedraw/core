@@ -19,6 +19,12 @@ Rect.between = function(u, v) {
   else           { top = v.y; bottom = u.y }
   return new Rect(left, top, right - left, bottom - top)
 }
+Rect.edgeWidth = function(u, v, width) {
+  return Rect.between(new Vec2(u.x - width / 2, u.y), new Vec2(u.x + width / 2, v.y))
+}
+Rect.edgeHeight = function(u, v, height) {
+  return Rect.between(new Vec2(u.x, u.y - height / 2), new Vec2(v.x, u.y + height / 2))
+}
 
 Rect.prototype.union = function(r) {
   if (this.width === 0 || this.height === 0) return r
@@ -93,14 +99,21 @@ Rect.prototype.handlePoint = function(i) {
     case 7: return this.leftCenter()
   }
 }
-Rect.prototype.expandHandle = function(i, v) {
+Rect.prototype.expandHandle = function(i, v, preserve) {
+  var u = this.handlePoint(i + 4)
   if (i % 2) {
     if (i % 4 === 1) {
-      return Rect.between(this.handlePoint(i + 5), new Vec2(this.handlePoint(i + 1).x, v.y))
+      return Rect.edgeWidth(u, v, preserve ? this.width / this.height * Math.abs(v.y - u.y) : this.width)
     }
-    return Rect.between(this.handlePoint(i + 5), new Vec2(v.x, this.handlePoint(i + 1).y))
+    return Rect.edgeHeight(u, v, preserve ? this.height / this.width * Math.abs(v.x - u.x) : this.height)
   }
-  return Rect.between(this.handlePoint(i + 4), v)
+  if (preserve) {
+    var aspect = this.width / this.height
+    var w = Math.abs(u.x - v.x)
+    var h = Math.abs(u.y - v.y)
+    v = new Vec2((v.x < u.x ? -1 : 1) * Math.min(w, h * aspect), (v.y < u.y ? -1 : 1) * Math.min(w / aspect, h)).add(u)
+  }
+  return Rect.between(u, v, preserve)
 }
 
 Rect.prototype.lerp = function(f, r) {
