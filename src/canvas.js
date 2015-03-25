@@ -59,6 +59,7 @@ function Canvas() {
   this.highlightedObject = null
 
   this.dragRect = null
+  this.dragOrigin = null
   this.dragIndex = null
 
   this.el.addEventListener('mousemove', this.onMouseMove.bind(this))
@@ -77,28 +78,23 @@ function Canvas() {
 Canvas.prototype.onMouseMove = function(e) {
   this.mouseX = e.clientX
   this.mouseY = e.clientY
+  var object = this.selectedObject
+  if (this.dragOrigin) {
+    var ctm = object.getScreenCTM().inverse()
+    var u = this.dragOrigin.transform(ctm)
+    var v = new Vec2(this.mouseX, this.mouseY).transform(ctm)
+    this.replaceBBox(object, this.dragRect.translate(v.sub(u)))
+    this.updateSelectionBox()
+    return
+  }
   if (this.dragRect) {
-    var object = this.selectedObject
     var preserve = object.localName === 'circle' || e.shiftKey
     var center = e.altKey
 
-    var ctm = this.selectedObject.getScreenCTM().inverse()
+    var ctm = object.getScreenCTM().inverse()
     var v = new Vec2(this.mouseX, this.mouseY).transform(ctm)
     var rect = this.dragRect.expandHandle(this.dragHandle, v, preserve, center)
-    switch (object.localName) {
-      case 'ellipse':
-      case 'circle':
-        var c = rect.center()
-        object.cx.baseVal.value = c.x
-        object.cy.baseVal.value = c.y
-        if (object.localName === 'circle') {
-          object.r.baseVal.value = rect.width / 2
-        } else {
-          object.rx.baseVal.value = rect.width / 2
-          object.ry.baseVal.value = rect.height / 2
-        }
-        break
-    }
+    this.replaceBBox(object, rect)
     this.updateSelectionBox()
     return
   }
@@ -117,11 +113,17 @@ Canvas.prototype.onMouseDown = function(e) {
     document.addEventListener('mouseup', this.onMouseUp)
     return
   }
+  if (t === this.selectedObject) {
+    this.dragRect = this.selectedObject.getBBox()
+    this.dragOrigin = new Vec2(this.mouseX, this.mouseY)
+    document.addEventListener('mouseup', this.onMouseUp)
+    return
+  }
   this.selectObject(t === this.svg ? null : t)
 }
 
 Canvas.prototype.onMouseUp = function() {
-  this.dragRect = this.dragHandle = null
+  this.dragRect = this.dragHandle = this.dragOrigin = null
   document.removeEventListener('mouseup', this.onMouseUp)
 }
 
@@ -242,6 +244,23 @@ Canvas.prototype.updateSelectionBox = function() {
     this.selectionHandles[i].replaceTransform(
       Matrix.translateBy(v).rotate(angle).translate(-3, -3))
   }, this)
+}
+
+Canvas.prototype.replaceBBox = function(object, rect) {
+  switch (object.localName) {
+    case 'ellipse':
+    case 'circle':
+      var c = rect.center()
+      object.cx.baseVal.value = c.x
+      object.cy.baseVal.value = c.y
+      if (object.localName === 'circle') {
+        object.r.baseVal.value = rect.width / 2
+      } else {
+        object.rx.baseVal.value = rect.width / 2
+        object.ry.baseVal.value = rect.height / 2
+      }
+      break
+  }
 }
 
 Canvas.prototype.highlightObject = function(object) {
