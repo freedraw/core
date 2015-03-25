@@ -4,6 +4,7 @@ var Vec2 = require('vec2')
 var Rect = require('rect')
 var Matrix = require('matrix')
 var commands = require('commands')
+var cursor = require('cursor')
 var convertWheelUnits = require('convert-wheel-units')
 
 var ZOOM_MAX = 64
@@ -69,8 +70,8 @@ function Canvas() {
   this.dragOrigin = null
   this.dragIndex = null
 
-  this.el.addEventListener('mousemove', this.onMouseMove.bind(this))
   this.el.addEventListener('mousedown', this.onMouseDown.bind(this))
+  document.addEventListener('mousemove', this.onMouseMove.bind(this))
   document.addEventListener('mouseup', this.onMouseUp.bind(this))
   this.el.addEventListener('magnify', this.onMagnify.bind(this))
   this.el.addEventListener('gestureend', this.constrainZoom.bind(this))
@@ -115,18 +116,21 @@ Canvas.prototype.onMouseDown = function(e) {
 
   var t = e.target
   if (t.matches('.selection-handle')) {
+    cursor.push(t.style.cursor)
     this.dragRect = this.selectedObject.getBBox()
     this.dragHandle = +t.dataset.index
     return
   }
   this.selectObject(t === this.svg ? null : t)
   if (this.selectedObject) {
+    cursor.push('-webkit-grabbing')
     this.dragRect = this.selectedObject.getBBox()
     this.dragOrigin = new Vec2(this.mouseX, this.mouseY)
   }
 }
 
 Canvas.prototype.onMouseUp = function() {
+  cursor.pop()
   this.dragRect = this.dragHandle = this.dragOrigin = null
 }
 
