@@ -59,6 +59,7 @@ Vec2.prototype.toSVG = function(svg) {
 
 Vec2.x = new Vec2(1, 0)
 Vec2.y = new Vec2(0, 1)
+Vec2.zero = new Vec2(0, 0)
 Vec2.one = new Vec2(1, 1)
 
 
