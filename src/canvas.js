@@ -135,6 +135,7 @@ Canvas.prototype.onMouseUp = function() {
 }
 
 Canvas.prototype.onWheel = function(e) {
+  e.preventDefault()
   var viewport = this.el.getBoundingClientRect()
   var delta = convertWheelUnits(e, viewport.width, viewport.height, 0)
   if (e.metaKey || e.ctrlKey) {
