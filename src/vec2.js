@@ -9,6 +9,15 @@ Vec2.prototype.add = function(p) {
 Vec2.prototype.sub = function(p) {
   return new Vec2(this.x - p.x, this.y - p.y)
 }
+Vec2.prototype.mul = function(p) {
+  return new Vec2(this.x * p.x, this.y * p.y)
+}
+Vec2.prototype.min = function(p) {
+  return new Vec2(Math.min(this.x, p.x), Math.min(this.y, p.y))
+}
+Vec2.prototype.max = function(p) {
+  return new Vec2(Math.max(this.x, p.x), Math.max(this.y, p.y))
+}
 Vec2.prototype.scale = function(f) {
   return new Vec2(this.x * f, this.y * f)
 }
