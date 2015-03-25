@@ -37,6 +37,12 @@ Vec2.prototype.unit = function() {
   if (length === 0) return Vec2.x
   return new Vec2(this.x / length, this.y / length)
 }
+Vec2.prototype.sgn = function() {
+  return new Vec2(Math.sgn(this.x), Math.sgn(this.y))
+}
+Vec2.prototype.abs = function() {
+  return new Vec2(Math.abs(this.x), Math.abs(this.y))
+}
 Vec2.prototype.angle = function() {
   return Math.atan2(this.y, this.x)
 }
