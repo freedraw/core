@@ -303,7 +303,20 @@ Canvas.prototype.highlightObject = function(object) {
       list.appendItem(path.createSVGPathSegMovetoAbs(major.x, major.y))
       list.appendItem(path.createSVGPathSegArcAbs(major2.x, major2.y, rx, ry, 0, false, true))
       list.appendItem(path.createSVGPathSegArcAbs(major.x, major.y, rx, ry, 0, false, true))
-      break
+      return
+    case 'rect':
+      var rect = new Rect(object.x.baseVal.value, object.y.baseVal.value, object.width.baseVal.value, object.height.baseVal.value)
+      var tl = rect.topLeft().transform(ctm)
+      var tr = rect.topRight().transform(ctm)
+      var br = rect.bottomRight().transform(ctm)
+      var bl = rect.bottomLeft().transform(ctm)
+
+      list.appendItem(path.createSVGPathSegMovetoAbs(tl.x, tl.y))
+      list.appendItem(path.createSVGPathSegLinetoAbs(tr.x, tr.y))
+      list.appendItem(path.createSVGPathSegLinetoAbs(br.x, br.y))
+      list.appendItem(path.createSVGPathSegLinetoAbs(bl.x, bl.y))
+      list.appendItem(path.createSVGPathSegClosePath())
+      return
   }
 }
 
