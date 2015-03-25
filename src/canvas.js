@@ -66,9 +66,7 @@ function Canvas() {
   this.selectedObject = null
   this.highlightedObject = null
 
-  this.dragRect = null
-  this.dragOrigin = null
-  this.dragIndex = null
+  this.drag = null
 
   this.el.addEventListener('mousedown', this.onMouseDown.bind(this))
   document.addEventListener('mousemove', this.onMouseMove.bind(this))
@@ -87,23 +85,28 @@ Canvas.prototype.onMouseMove = function(e) {
   this.mouseX = e.clientX
   this.mouseY = e.clientY
   var object = this.selectedObject
-  if (this.dragOrigin) {
+  var drag = this.drag
+  if (drag) {
     var ctm = object.getScreenCTM().inverse()
-    var u = this.dragOrigin.transform(ctm)
-    var v = new Vec2(this.mouseX, this.mouseY).transform(ctm)
-    this.replaceBBox(object, this.dragRect.translate(v.sub(u)))
-    this.updateSelectionBox()
-    return
-  }
-  if (this.dragRect) {
-    var preserve = object.localName === 'circle' || e.shiftKey
-    var center = e.altKey
+    switch (drag.kind) {
+      case 'translate':
+        var u = drag.origin.transform(ctm)
+        var v = new Vec2(this.mouseX, this.mouseY).transform(ctm)
+        this.replaceBBox(object, drag.rect.translate(v.sub(u)))
+        this.updateSelectionBox()
+        return
+      case 'resize':
+        var preserve = object.localName === 'circle' || e.shiftKey
+        var center = e.altKey
 
-    var ctm = object.getScreenCTM().inverse()
-    var v = new Vec2(this.mouseX, this.mouseY).transform(ctm)
-    var rect = this.dragRect.expandHandle(this.dragHandle, v, preserve, center)
-    this.replaceBBox(object, rect)
-    this.updateSelectionBox()
+        var ctm = object.getScreenCTM().inverse()
+        var v = new Vec2(this.mouseX, this.mouseY).transform(ctm)
+        var rect = drag.rect.expandHandle(drag.handle, v, preserve, center)
+        this.replaceBBox(object, rect)
+        this.updateSelectionBox()
+        return
+    }
+    console.warn('Unimplemented drag:', drag.kind)
     return
   }
   this.hoverObject(e.target)
@@ -117,21 +120,27 @@ Canvas.prototype.onMouseDown = function(e) {
   var t = e.target
   if (t.matches('.selection-handle')) {
     cursor.push(t.style.cursor)
-    this.dragRect = this.selectedObject.getBBox()
-    this.dragHandle = +t.dataset.index
+    this.drag = {
+      kind: 'resize',
+      rect: this.selectedObject.getBBox(),
+      handle: +t.dataset.index
+    }
     return
   }
   this.selectObject(t === this.svg ? null : t)
   if (this.selectedObject) {
     cursor.push('-webkit-grabbing')
-    this.dragRect = this.selectedObject.getBBox()
-    this.dragOrigin = new Vec2(this.mouseX, this.mouseY)
+    this.drag = {
+      kind: 'translate',
+      rect: this.selectedObject.getBBox(),
+      origin: new Vec2(this.mouseX, this.mouseY)
+    }
   }
 }
 
 Canvas.prototype.onMouseUp = function() {
   cursor.pop()
-  this.dragRect = this.dragHandle = this.dragOrigin = null
+  this.drag = null
 }
 
 Canvas.prototype.onWheel = function(e) {
