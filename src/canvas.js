@@ -255,7 +255,10 @@ Canvas.prototype.updateSelectionBox = function() {
     var handle = this.selectionHandles[i]
     var hide = i % 2 && (i % 4 === 1 ? width : height) < MIN_MID_HANDLE
     handle.style.display = hide ? 'none' : 'inline'
-    if (!hide) handle.replaceTransform(Matrix.translateBy(v).rotate(angle).translate(-3, -3))
+    if (!hide) {
+      handle.replaceTransform(Matrix.translateBy(v).rotate(angle).translate(-3, -3))
+      handle.style.cursor = cursor.resizeAlong(Math.PI * (3 - i) / 4 - angle)
+    }
   }, this)
 }
 
