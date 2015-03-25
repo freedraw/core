@@ -243,7 +243,7 @@ Canvas.prototype.updateSelectionBox = function() {
 
   var width = tl.distanceSquared(tr)
   var height = tl.distanceSquared(bl)
-  if (width < MIN_HANDLE || height < MIN_HANDLE) {
+  if (width < MIN_HANDLE && height < MIN_HANDLE) {
     this.selectionHandleGroup.style.display = 'none'
     return
   }
