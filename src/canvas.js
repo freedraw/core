@@ -164,7 +164,7 @@ Canvas.prototype.zoomBy = function(delta, x, y) {
 }
 
 Canvas.prototype.zoomTo = function(scale, x, y) {
-  this.zoomBy(scale / this.scale - 1)
+  this.zoomBy(scale / this.scale - 1, x, y)
 }
 
 Canvas.prototype.zoomCenter = function() {
