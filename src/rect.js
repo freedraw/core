@@ -55,6 +55,10 @@ Rect.prototype.include = function(p) {
   return new Rect(left, top, right - left, bottom - top)
 }
 
+Rect.prototype.translate = function(u) {
+  return new Rect(this.x + u.x, this.y + u.y, this.width, this.height)
+}
+
 Rect.prototype.topLeft = function() {
   return new Vec2(this.x, this.y)
 }
