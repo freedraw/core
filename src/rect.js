@@ -113,7 +113,7 @@ Rect.prototype.expandHandle = function(i, v, preserve) {
     var h = Math.abs(u.y - v.y)
     v = new Vec2((v.x < u.x ? -1 : 1) * Math.min(w, h * aspect), (v.y < u.y ? -1 : 1) * Math.min(w / aspect, h)).add(u)
   }
-  return Rect.between(u, v, preserve)
+  return Rect.between(u, v)
 }
 
 Rect.prototype.lerp = function(f, r) {
