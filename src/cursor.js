@@ -30,3 +30,10 @@ exports.resizeTowards = function(angle) {
   if (angle < 0) angle += 1
   return angleTowards[Math.round(angle * angleTowards.length) % angleTowards.length]
 }
+
+var angleAlong = ['ew-resize', 'nesw-resize', 'ns-resize', 'nwse-resize']
+exports.resizeAlong = function(angle) {
+  angle = angle / Math.PI % 1
+  if (angle < 0) angle += 1
+  return angleAlong[Math.round(angle * angleAlong.length) % angleAlong.length]
+}
