@@ -10,6 +10,8 @@ var ZOOM_MAX = 64
 var ZOOM_MIN = .01
 var ZOOM_FACTOR = 1.5
 var ZOOM_CENTER_SPACE = .7
+var MIN_HANDLE = 10 * 10
+var MIN_MID_HANDLE = 20 * 20
 
 function Canvas() {
   this.selectionHandles = []
@@ -220,7 +222,6 @@ Canvas.prototype.updateSelectionBox = function() {
     this.selectionHandleGroup.style.display = 'none'
     return
   }
-  this.selectionHandleGroup.style.display = 'inline'
 
   var ctm = object.getCTM()
   var bb = object.getBBox()
@@ -240,10 +241,20 @@ Canvas.prototype.updateSelectionBox = function() {
   list.appendItem(box.createSVGPathSegLinetoAbs(bl.x, bl.y))
   list.appendItem(box.createSVGPathSegClosePath())
 
+  var width = tl.distanceSquared(tr)
+  var height = tl.distanceSquared(bl)
+  if (width < MIN_HANDLE || height < MIN_HANDLE) {
+    this.selectionHandleGroup.style.display = 'none'
+    return
+  }
+  this.selectionHandleGroup.style.display = 'inline'
+
   var angle = tr.sub(tl).angle()
   ;[tl, tc, tr, rc, br, bc, bl, lc].forEach(function(v, i) {
-    this.selectionHandles[i].replaceTransform(
-      Matrix.translateBy(v).rotate(angle).translate(-3, -3))
+    var handle = this.selectionHandles[i]
+    var hide = i % 2 && (i % 4 === 1 ? width : height) < MIN_MID_HANDLE
+    handle.style.display = hide ? 'none' : 'inline'
+    if (!hide) handle.replaceTransform(Matrix.translateBy(v).rotate(angle).translate(-3, -3))
   }, this)
 }
 
@@ -296,7 +307,7 @@ Canvas.prototype.highlightObject = function(object) {
       var major2 = new Vec2(cx - rx, cy).transform(ctm)
       var minor = new Vec2(cx, cy + ry).transform(ctm)
       var minor2 = new Vec2(cx, cy - ry).transform(ctm)
-      var angle = Vec2.x.transform(ctm).sub(Vec2.zero.transform(ctm)).angle() * 180 / Math.PI
+      var angle = minor.sub(new Vec2(cx, cy).transform(ctm)).angle() * 180 / Math.PI - 90
 
       var rx = major.sub(major2).length() / 2
       var ry = minor.sub(minor2).length() / 2
