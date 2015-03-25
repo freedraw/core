@@ -79,6 +79,30 @@ Rect.prototype.center = function() {
   return new Vec2(this.x + this.width / 2, this.y + this.height / 2)
 }
 
+Rect.prototype.handlePoint = function(i) {
+  i = i % 8
+  if (i < 0) i += 8
+  switch (i) {
+    case 0: return this.topLeft()
+    case 1: return this.topCenter()
+    case 2: return this.topRight()
+    case 3: return this.rightCenter()
+    case 4: return this.bottomRight()
+    case 5: return this.bottomCenter()
+    case 6: return this.bottomLeft()
+    case 7: return this.leftCenter()
+  }
+}
+Rect.prototype.expandHandle = function(i, v) {
+  if (i % 2) {
+    if (i % 4 === 1) {
+      return Rect.between(this.handlePoint(i + 5), new Vec2(this.handlePoint(i + 1).x, v.y))
+    }
+    return Rect.between(this.handlePoint(i + 5), new Vec2(v.x, this.handlePoint(i + 1).y))
+  }
+  return Rect.between(this.handlePoint(i + 4), v)
+}
+
 Rect.prototype.lerp = function(f, r) {
   var g = 1 - f
   return new Rect(this.x * g + r.x * f, this.y * g + r.y * f, this.width * g + r.width * f, this.height * g + r.height * f)
