@@ -80,10 +80,11 @@ Canvas.prototype.onMouseMove = function(e) {
   if (this.dragRect) {
     var object = this.selectedObject
     var preserve = object.localName === 'circle' || e.shiftKey
+    var center = e.altKey
 
     var ctm = this.selectedObject.getScreenCTM().inverse()
     var v = new Vec2(this.mouseX, this.mouseY).transform(ctm)
-    var rect = this.dragRect.expandHandle(this.dragHandle, v, preserve)
+    var rect = this.dragRect.expandHandle(this.dragHandle, v, preserve, center)
     switch (object.localName) {
       case 'ellipse':
       case 'circle':
