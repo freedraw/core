@@ -58,8 +58,12 @@ function Canvas() {
   this.selectedObject = null
   this.highlightedObject = null
 
+  this.dragRect = null
+  this.dragIndex = null
+
   this.el.addEventListener('mousemove', this.onMouseMove.bind(this))
   this.el.addEventListener('mousedown', this.onMouseDown.bind(this))
+  this.onMouseUp = this.onMouseUp.bind(this)
   this.el.addEventListener('magnify', this.onMagnify.bind(this))
   this.el.addEventListener('gestureend', this.constrainZoom.bind(this))
   this.el.addEventListener('wheel', this.onWheel.bind(this))
@@ -73,14 +77,44 @@ function Canvas() {
 Canvas.prototype.onMouseMove = function(e) {
   this.mouseX = e.clientX
   this.mouseY = e.clientY
+  if (this.dragRect) {
+    var ctm = this.selectedObject.getScreenCTM().inverse()
+    var v = new Vec2(this.mouseX, this.mouseY).transform(ctm)
+    var rect = this.dragRect.expandHandle(this.dragHandle, v)
+    var object = this.selectedObject
+    switch (object.localName) {
+      case 'ellipse':
+        var c = rect.center()
+        object.cx.baseVal.value = c.x
+        object.cy.baseVal.value = c.y
+        object.rx.baseVal.value = rect.width / 2
+        object.ry.baseVal.value = rect.height / 2
+        break
+    }
+    this.updateSelectionBox()
+    return
+  }
   this.hoverObject(e.target)
 }
 
 Canvas.prototype.onMouseDown = function(e) {
+  this.highlightObject(null)
   this.mouseX = e.clientX
   this.mouseY = e.clientY
-  this.selectObject(e.target === this.svg ? null : e.target)
-  this.highlightObject(null)
+
+  var t = e.target
+  if (t.matches('.selection-handle')) {
+    this.dragRect = this.selectedObject.getBBox()
+    this.dragHandle = +t.dataset.index
+    document.addEventListener('mouseup', this.onMouseUp)
+    return
+  }
+  this.selectObject(t === this.svg ? null : t)
+}
+
+Canvas.prototype.onMouseUp = function() {
+  this.dragRect = this.dragHandle = null
+  document.removeEventListener('mouseup', this.onMouseUp)
 }
 
 Canvas.prototype.onWheel = function(e) {
