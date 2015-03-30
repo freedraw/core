@@ -135,10 +135,10 @@ Inspector.prototype.updateFields = function() {
   }
 
   var bb = object.getBBox().floor()
-  this.inputX.value = bb.x
-  this.inputY.value = bb.y
-  this.inputWidth.value = bb.width
-  this.inputHeight.value = bb.height
+  this.inputX.valueAsNumber = bb.x
+  this.inputY.valueAsNumber = bb.y
+  this.inputWidth.valueAsNumber = bb.width
+  this.inputHeight.valueAsNumber = bb.height
 }
 
 Inspector.prototype.updateBBox = function() {
