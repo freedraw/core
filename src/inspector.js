@@ -59,7 +59,7 @@ function Inspector(editor) {
             this.inputOpacitySlider = h('input', {type: 'range', value: 0, min: 0, max: 100, disabled: true})
           ]),
           h('.field', [
-            this.inputOpacity = h('input', {type: 'number', disabled: true})
+            this.inputOpacity = h('input', {type: 'number', min: 0, max: 100, disabled: true})
           ])
         ]),
         h('.row', [
@@ -103,9 +103,12 @@ function Inspector(editor) {
   this.controls = [this.inputX, this.inputY, this.inputWidth, this.inputHeight, this.inputRotate, this.buttonFlipH, this.buttonFlipV, this.inputOpacitySlider, this.inputOpacity, this.inputBlending]
 
   this.updateBBox = this.updateBBox.bind(this)
+
   ;[this.inputX, this.inputY, this.inputWidth, this.inputHeight].forEach(function(input) {
     input.addEventListener('input', this.updateBBox)
   }, this)
+  this.inputOpacity.addEventListener('input', this.updateOpacity.bind(this))
+  this.inputOpacitySlider.addEventListener('input', this.updateOpacityFromSlider.bind(this))
 }
 
 Inspector.prototype.selectObject = function(object) {
@@ -149,6 +152,24 @@ Inspector.prototype.updateBBox = function() {
   if (!object || !this.inputX.value || !this.inputY.value || !this.inputWidth.value || !this.inputHeight.value) return
   replaceBBox(object, Rect.normalized(this.inputX.valueAsNumber, this.inputY.valueAsNumber, this.inputWidth.valueAsNumber, this.inputHeight.valueAsNumber))
   this.editor.canvas.updateSelectionBox()
+}
+
+Inspector.prototype.updateOpacity = function() {
+  var object = this.selectedObject
+  if (!object) return
+
+  var value = Math.max(0, Math.min(100, this.inputOpacity.valueAsNumber))
+  object.style.opacity = value / 100
+  this.inputOpacitySlider.valueAsNumber = value
+}
+
+Inspector.prototype.updateOpacityFromSlider = function() {
+  var object = this.selectedObject
+  if (!object) return
+
+  var value = Math.max(0, Math.min(100, this.inputOpacitySlider.valueAsNumber))
+  object.style.opacity = value / 100
+  this.inputOpacity.valueAsNumber = value
 }
 
 exports = Inspector
