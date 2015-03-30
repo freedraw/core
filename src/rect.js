@@ -66,6 +66,13 @@ Rect.prototype.include = function(p) {
   return new Rect(left, top, right - left, bottom - top)
 }
 
+Rect.prototype.floor = function() {
+  var left = Math.floor(this.x)
+  var right = Math.floor(this.x + this.width)
+  var top = Math.floor(this.y)
+  var bottom = Math.floor(this.y + this.height)
+  return new Rect(left, top, right - left, bottom - top)
+}
 Rect.prototype.translate = function(u) {
   return new Rect(this.x + u.x, this.y + u.y, this.width, this.height)
 }
