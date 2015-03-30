@@ -1,7 +1,7 @@
 var h = require('html')
 var Panel = require('panel')
 var Canvas = require('canvas')
-var MockInspector = require('mock-inspector')
+var Inspector = require('inspector')
 
 function Editor() {
   this.layers = new Panel(215, h('.layers panel', [
@@ -10,9 +10,8 @@ function Editor() {
     h('.panel-footer')
   ]))
 
-  this.canvas = new Canvas
-
-  this.inspector = new MockInspector
+  this.canvas = new Canvas(this)
+  this.inspector = new Inspector(this)
 
   this.el = h('.editor', [
     this.layers.el,

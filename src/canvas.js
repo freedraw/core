@@ -6,6 +6,7 @@ var Matrix = require('matrix')
 var commands = require('commands')
 var cursor = require('cursor')
 var convertWheelUnits = require('convert-wheel-units')
+var replaceBBox = require('replace-bbox')
 
 var ZOOM_MAX = 64
 var ZOOM_MIN = .01
@@ -14,7 +15,9 @@ var ZOOM_CENTER_SPACE = .7
 var MIN_HANDLE = 10 * 10
 var MIN_MID_HANDLE = 20 * 20
 
-function Canvas() {
+function Canvas(editor) {
+  this.editor = editor
+
   this.selectionHandles = []
   for (var i = 0; i < 8; i++) {
     var handle = svg('rect', {class: 'selection-handle', 'data-index': i, width: 6, height: 6})
@@ -92,7 +95,7 @@ Canvas.prototype.onMouseMove = function(e) {
       case 'translate':
         var u = drag.origin.transform(ctm)
         var v = new Vec2(this.mouseX, this.mouseY).transform(ctm)
-        this.replaceBBox(object, drag.rect.translate(v.sub(u)))
+        replaceBBox(object, drag.rect.translate(v.sub(u)))
         this.updateSelectionBox()
         return
       case 'resize':
@@ -102,7 +105,7 @@ Canvas.prototype.onMouseMove = function(e) {
         var ctm = object.getScreenCTM().inverse()
         var v = new Vec2(this.mouseX, this.mouseY).transform(ctm)
         var rect = drag.rect.expandHandle(drag.handle, v, preserve, center)
-        this.replaceBBox(object, rect)
+        replaceBBox(object, rect)
         this.updateSelectionBox()
         return
     }
@@ -222,6 +225,7 @@ Canvas.prototype.hoverObject = function(object) {
 Canvas.prototype.selectObject = function(object) {
   this.selectedObject = object
   this.updateSelectionBox()
+  this.editor.inspector.selectObject(object)
 }
 
 Canvas.prototype.updateSelectionBox = function() {
@@ -272,29 +276,6 @@ Canvas.prototype.updateSelectionBox = function() {
       handle.style.cursor = cursor.resizeAlong(Math.PI * (3 - i) / 4 - angle)
     }
   }, this)
-}
-
-Canvas.prototype.replaceBBox = function(object, rect) {
-  switch (object.localName) {
-    case 'ellipse':
-    case 'circle':
-      var c = rect.center()
-      object.cx.baseVal.value = c.x
-      object.cy.baseVal.value = c.y
-      if (object.localName === 'circle') {
-        object.r.baseVal.value = rect.width / 2
-      } else {
-        object.rx.baseVal.value = rect.width / 2
-        object.ry.baseVal.value = rect.height / 2
-      }
-      return
-    case 'rect':
-      object.x.baseVal.value = rect.x
-      object.y.baseVal.value = rect.y
-      object.width.baseVal.value = rect.width
-      object.height.baseVal.value = rect.height
-      return
-  }
 }
 
 Canvas.prototype.highlightObject = function(object) {

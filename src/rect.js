@@ -11,6 +11,17 @@ Rect.zero = new Rect(0, 0, 0, 0)
 Rect.bb = function(bb) {
   return new Rect(bb.left, bb.top, bb.width, bb.height)
 }
+Rect.normalized = function(x, y, width, height) {
+  if (width < 0) {
+    x += width
+    width *= -1
+  }
+  if (height < 0) {
+    y += height
+    height *= -1
+  }
+  return new Rect(x, y, width, height)
+}
 Rect.between = function(u, v) {
   var left, right, top, bottom
   if (u.x < v.x) { left = u.x; right = v.x }
