@@ -139,6 +139,9 @@ Inspector.prototype.updateFields = function() {
   this.inputY.valueAsNumber = bb.y
   this.inputWidth.valueAsNumber = bb.width
   this.inputHeight.valueAsNumber = bb.height
+
+  this.inputOpacity.valueAsNumber =
+  this.inputOpacitySlider.valueAsNumber = getComputedStyle(object).opacity * 100
 }
 
 Inspector.prototype.updateBBox = function() {
