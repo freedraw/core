@@ -66,27 +66,27 @@ function Inspector(editor) {
           h('label', ['Blending']),
           h('.field', [
             this.inputBlending = h('select', {disabled: true}, [
-              h('option', ['Normal']),
+              h('option', {value: 'normal'}, ['Normal']),
               h('hr'),
-              h('option', ['Darken']),
-              h('option', ['Multiply']),
-              h('option', ['Color Burn']),
+              h('option', {value: 'darken'}, ['Darken']),
+              h('option', {value: 'multiply'}, ['Multiply']),
+              h('option', {value: 'color-burn'}, ['Color Burn']),
               h('hr'),
-              h('option', ['Lighten']),
-              h('option', ['Screen']),
-              h('option', ['Color Dodge']),
+              h('option', {value: 'lighten'}, ['Lighten']),
+              h('option', {value: 'screen'}, ['Screen']),
+              h('option', {value: 'color-dodge'}, ['Color Dodge']),
               h('hr'),
-              h('option', ['Overlay']),
-              h('option', ['Soft Light']),
-              h('option', ['Hard Light']),
+              h('option', {value: 'overlay'}, ['Overlay']),
+              h('option', {value: 'soft-light'}, ['Soft Light']),
+              h('option', {value: 'hard-light'}, ['Hard Light']),
               h('hr'),
-              h('option', ['Difference']),
-              h('option', ['Exclusion']),
+              h('option', {value: 'difference'}, ['Difference']),
+              h('option', {value: 'exclusion'}, ['Exclusion']),
               h('hr'),
-              h('option', ['Hue']),
-              h('option', ['Saturation']),
-              h('option', ['Color']),
-              h('option', ['Luminosity'])
+              h('option', {value: 'hue'}, ['Hue']),
+              h('option', {value: 'saturation'}, ['Saturation']),
+              h('option', {value: 'color'}, ['Color']),
+              h('option', {value: 'luminosity'}, ['Luminosity'])
             ])
           ])
         ])
@@ -109,6 +109,7 @@ function Inspector(editor) {
   }, this)
   this.inputOpacity.addEventListener('input', this.updateOpacity.bind(this))
   this.inputOpacitySlider.addEventListener('input', this.updateOpacityFromSlider.bind(this))
+  this.inputBlending.addEventListener('input', this.updateBlending.bind(this))
 }
 
 Inspector.prototype.selectObject = function(object) {
@@ -123,7 +124,7 @@ Inspector.prototype.setUpFields = function() {
     this.controls.forEach(function(control) {
       control.disabled = true
       control.value =
-        control === this.inputBlending ? 'Normal' :
+        control === this.inputBlending ? 'normal' :
         control === this.inputOpacitySlider ? 0 : ''
     }, this)
     return
@@ -138,13 +139,17 @@ Inspector.prototype.updateFields = function() {
   }
 
   var bb = object.getBBox().floor()
+  var style = getComputedStyle(object)
+
   this.inputX.valueAsNumber = bb.x
   this.inputY.valueAsNumber = bb.y
   this.inputWidth.valueAsNumber = bb.width
   this.inputHeight.valueAsNumber = bb.height
 
   this.inputOpacity.valueAsNumber =
-  this.inputOpacitySlider.valueAsNumber = getComputedStyle(object).opacity * 100
+  this.inputOpacitySlider.valueAsNumber = style.opacity * 100
+
+  this.inputBlending.value = style.mixBlendMode
 }
 
 Inspector.prototype.updateBBox = function() {
@@ -170,6 +175,13 @@ Inspector.prototype.updateOpacityFromSlider = function() {
   var value = Math.max(0, Math.min(100, this.inputOpacitySlider.valueAsNumber))
   object.style.opacity = value / 100
   this.inputOpacity.valueAsNumber = value
+}
+
+Inspector.prototype.updateBlending = function() {
+  var object = this.selectedObject
+  if (!object) return
+
+  object.style.mixBlendMode = this.inputBlending.value
 }
 
 exports = Inspector
