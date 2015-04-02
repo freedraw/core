@@ -43,3 +43,15 @@ exports = function(object) {
 
   return object
 }
+
+exports.property = function(object, name) {
+  var data = '_' + name
+  var event = name + 'Change'
+  Object.defineProperty(object, name, {
+    get: function() {return this[data]},
+    set: function(value) {
+      this[data] = value
+      this.emit(event)
+    }
+  })
+}

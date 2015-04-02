@@ -4,7 +4,6 @@ var Rect = require('rect')
 
 function Inspector(editor) {
   this.editor = editor
-  this.selectedObject = null
 
   this.el = h('.inspector panel', [
     h('.panel-header'),
@@ -110,16 +109,22 @@ function Inspector(editor) {
   this.inputOpacity.addEventListener('input', this.updateOpacity.bind(this))
   this.inputOpacitySlider.addEventListener('input', this.updateOpacityFromSlider.bind(this))
   this.inputBlending.addEventListener('input', this.updateBlending.bind(this))
+
+  editor.on('selectionChange', this.onSelectionChange, this)
+  editor.on('selectionBoundsChange', this.onSelectionBoundsChange, this)
 }
 
-Inspector.prototype.selectObject = function(object) {
-  this.selectedObject = object
+Inspector.prototype.onSelectionChange = function() {
   this.setUpFields()
   this.updateFields()
 }
 
+Inspector.prototype.onSelectionBoundsChange = function() {
+  this.updateBoundsFields()
+}
+
 Inspector.prototype.setUpFields = function() {
-  var object = this.selectedObject
+  var object = this.editor.selection
   if (!object) {
     this.controls.forEach(function(control) {
       control.disabled = true
@@ -133,18 +138,12 @@ Inspector.prototype.setUpFields = function() {
 }
 
 Inspector.prototype.updateFields = function() {
-  var object = this.selectedObject
-  if (!object) {
-    return
-  }
+  var object = this.editor.selection
+  if (!object) return
 
-  var bb = object.getBBox().floor()
   var style = getComputedStyle(object)
 
-  this.inputX.valueAsNumber = bb.x
-  this.inputY.valueAsNumber = bb.y
-  this.inputWidth.valueAsNumber = bb.width
-  this.inputHeight.valueAsNumber = bb.height
+  this.updateBoundsFields()
 
   this.inputOpacity.valueAsNumber =
   this.inputOpacitySlider.valueAsNumber = style.opacity * 100
@@ -152,15 +151,26 @@ Inspector.prototype.updateFields = function() {
   this.inputBlending.value = style.mixBlendMode
 }
 
+Inspector.prototype.updateBoundsFields = function() {
+  var object = this.editor.selection
+  if (!object) return
+
+  var bb = object.getBBox().floor()
+  this.inputX.valueAsNumber = bb.x
+  this.inputY.valueAsNumber = bb.y
+  this.inputWidth.valueAsNumber = bb.width
+  this.inputHeight.valueAsNumber = bb.height
+}
+
 Inspector.prototype.updateBBox = function() {
-  var object = this.selectedObject
+  var object = this.editor.selection
   if (!object || !this.inputX.value || !this.inputY.value || !this.inputWidth.value || !this.inputHeight.value) return
   replaceBBox(object, Rect.normalized(this.inputX.valueAsNumber, this.inputY.valueAsNumber, this.inputWidth.valueAsNumber, this.inputHeight.valueAsNumber))
   this.editor.canvas.updateSelectionBox()
 }
 
 Inspector.prototype.updateOpacity = function() {
-  var object = this.selectedObject
+  var object = this.editor.selection
   if (!object) return
 
   var value = Math.max(0, Math.min(100, this.inputOpacity.valueAsNumber))
@@ -169,7 +179,7 @@ Inspector.prototype.updateOpacity = function() {
 }
 
 Inspector.prototype.updateOpacityFromSlider = function() {
-  var object = this.selectedObject
+  var object = this.editor.selection
   if (!object) return
 
   var value = Math.max(0, Math.min(100, this.inputOpacitySlider.valueAsNumber))
@@ -178,7 +188,7 @@ Inspector.prototype.updateOpacityFromSlider = function() {
 }
 
 Inspector.prototype.updateBlending = function() {
-  var object = this.selectedObject
+  var object = this.editor.selection
   if (!object) return
 
   object.style.mixBlendMode = this.inputBlending.value

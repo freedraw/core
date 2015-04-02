@@ -48,7 +48,6 @@ function Canvas(editor) {
 
   this.mouseX = NaN
   this.mouseY = NaN
-  this.selectedObject = null
   this.highlightedObject = null
 
   this.drag = null
@@ -64,12 +63,15 @@ function Canvas(editor) {
   commands.on('zoomCenter', this.zoomCenter, this)
   commands.on('zoomIn', this.zoomBy.bind(this, ZOOM_FACTOR - 1))
   commands.on('zoomOut', this.zoomBy.bind(this, 1 / ZOOM_FACTOR - 1))
+
+  editor.on('selectionChange', this.updateSelectionBox, this)
+  editor.on('selectionBoundsChange', this.updateSelectionBox, this)
 }
 
 Canvas.prototype.onMouseMove = function(e) {
   this.mouseX = e.clientX
   this.mouseY = e.clientY
-  var object = this.selectedObject
+  var object = this.editor.selection
   var drag = this.drag
   if (drag) {
     var ctm = object.getScreenCTM().inverse()
@@ -78,7 +80,7 @@ Canvas.prototype.onMouseMove = function(e) {
         var u = drag.origin.transform(ctm)
         var v = new Vec2(this.mouseX, this.mouseY).transform(ctm)
         replaceBBox(object, drag.rect.translate(v.sub(u)))
-        this.updateSelectionBox()
+        this.editor.emit('selectionBoundsChange')
         return
       case 'resize':
         var preserve = object.localName === 'circle' || e.shiftKey
@@ -88,7 +90,7 @@ Canvas.prototype.onMouseMove = function(e) {
         var v = new Vec2(this.mouseX, this.mouseY).transform(ctm)
         var rect = drag.rect.expandHandle(drag.handle, v, preserve, center)
         replaceBBox(object, rect)
-        this.updateSelectionBox()
+        this.editor.emit('selectionBoundsChange')
         return
     }
     console.warn('Unimplemented drag:', drag.kind)
@@ -107,17 +109,16 @@ Canvas.prototype.onMouseDown = function(e) {
     cursor.push(t.style.cursor)
     this.drag = {
       kind: 'resize',
-      rect: this.selectedObject.getBBox(),
+      rect: this.editor.selection.getBBox(),
       handle: +t.dataset.index
     }
     return
   }
-  this.selectObject(t === this.svg ? null : t)
-  if (this.selectedObject) {
+  if (this.editor.selection = t === this.svg ? null : t) {
     cursor.push('-webkit-grabbing')
     this.drag = {
       kind: 'translate',
-      rect: this.selectedObject.getBBox(),
+      rect: this.editor.selection.getBBox(),
       origin: new Vec2(this.mouseX, this.mouseY)
     }
   }
@@ -148,7 +149,10 @@ Canvas.prototype.setDocument = function(doc) {
   var root = document.importNode(doc.documentElement, true)
   this.el.replaceChild(root, this.svg)
   this.svg = root
-  this.updateViewBox()
+  var viewport = this.el.getBoundingClientRect()
+  var bb = this.svg.getBBox()
+  this.centerX = bb.x + bb.width / 2
+  this.centerY = bb.y + bb.height / 2
 }
 
 Canvas.prototype.scrollBy = function(deltaX, deltaY) {
@@ -202,23 +206,17 @@ Canvas.prototype.updateViewBox = function() {
     var t = document.elementFromPoint(this.mouseX, this.mouseY)
     this.hoverObject(t)
   }
-  if (this.selectedObject) {
+  if (this.editor.selection) {
     this.updateSelectionBox()
   }
 }
 
 Canvas.prototype.hoverObject = function(object) {
-  this.highlightObject(!object || object === this.svg || object === this.selectedObject || object.ownerSVGElement !== this.svg ? null : object)
-}
-
-Canvas.prototype.selectObject = function(object) {
-  this.selectedObject = object
-  this.updateSelectionBox()
-  this.editor.inspector.selectObject(object)
+  this.highlightObject(!object || object === this.svg || object === this.editor.selection || object.ownerSVGElement !== this.svg ? null : object)
 }
 
 Canvas.prototype.updateSelectionBox = function() {
-  var object = this.selectedObject
+  var object = this.editor.selection
   var box = this.selectionBox
   var list = box.pathSegList
   list.clear()

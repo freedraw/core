@@ -2,6 +2,7 @@ var h = require('html')
 var Panel = require('panel')
 var Canvas = require('canvas')
 var Inspector = require('inspector')
+var emitter = require('emitter')
 
 function Editor() {
   this.layers = new Panel(215, h('.layers panel', [
@@ -13,6 +14,8 @@ function Editor() {
   this.canvas = new Canvas(this)
   this.inspector = new Inspector(this)
 
+  this._selection = null
+
   this.el = h('.editor', [
     this.layers.el,
     this.canvas.el,
@@ -20,10 +23,14 @@ function Editor() {
   ])
 }
 
+emitter(Editor.prototype)
+emitter.property(Editor.prototype, 'selection')
+
 Editor.prototype.start = function() {
   document.body.appendChild(this.el)
   addEventListener('resize', this.onResize.bind(this))
   this.onResize()
+  this.canvas.zoomCenter()
   return this
 }
 
