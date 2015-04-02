@@ -133,7 +133,7 @@ Canvas.prototype.onWheel = function(e) {
   var viewport = this.el.getBoundingClientRect()
   var delta = convertWheelUnits(e, viewport.width, viewport.height, 0)
   if (e.metaKey || e.ctrlKey) {
-    this.zoomBy(delta.y / 120, e.clientX, e.clientY)
+    this.zoomBy(-delta.y / 120, e.clientX, e.clientY)
   } else {
     this.scrollBy(delta.x, delta.y)
   }
