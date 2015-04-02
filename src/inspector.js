@@ -119,8 +119,13 @@ Inspector.prototype.onSelectionChange = function() {
   this.updateFields()
 }
 
-Inspector.prototype.onSelectionBoundsChange = function() {
-  this.updateBoundsFields()
+Inspector.prototype.onSelectionBoundsChange = function(e) {
+  if (e && e.source === 'inspector') return
+  if (this.boundsChangeTimeout) return
+  this.boundsChangeTimeout = setTimeout(function() {
+    this.updateBoundsFields()
+    this.boundsChangeTimeout = null
+  }.bind(this), 100)
 }
 
 Inspector.prototype.setUpFields = function() {
@@ -166,7 +171,7 @@ Inspector.prototype.updateBBox = function() {
   var object = this.editor.selection
   if (!object || !this.inputX.value || !this.inputY.value || !this.inputWidth.value || !this.inputHeight.value) return
   replaceBBox(object, Rect.normalized(this.inputX.valueAsNumber, this.inputY.valueAsNumber, this.inputWidth.valueAsNumber, this.inputHeight.valueAsNumber))
-  this.editor.canvas.updateSelectionBox()
+  this.editor.emit('selectionBoundsChange', {source: 'inspector'})
 }
 
 Inspector.prototype.updateOpacity = function() {
