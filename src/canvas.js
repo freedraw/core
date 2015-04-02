@@ -25,25 +25,7 @@ function Canvas(editor) {
   }
 
   this.el = h('.canvas', [
-    this.svg = svg('svg', [
-      svg('circle', {cx: 0, cy: 0, r: 30, style: {
-        fill: 'red',
-        stroke: 'black',
-        strokeWidth: '2px'
-      }}),
-      svg('g', {transform: 'rotate(30) translate(30,-100) scale(.5,2)'}, [
-        svg('ellipse', {cx: 50, cy: 40, rx: 60, ry: 80, style: {
-          fill: 'yellow',
-          stroke: 'black',
-          strokeWidth: '1px'
-        }}),
-        svg('rect', {x: -230, y: 90, width: 160, height: 40, style: {
-          fill: 'hotpink',
-          stroke: 'black',
-          strokeWidth: '2px'
-        }})
-      ])
-    ]),
+    this.svg = svg('svg'),
     this.ui = svg('svg', {style: {pointerEvents: 'none'}}, [
       this.selectionBox = svg('path', {style: {
         fill: 'none',
@@ -160,6 +142,13 @@ Canvas.prototype.onWheel = function(e) {
 Canvas.prototype.onMagnify = function(e) {
   e.stopPropagation()
   this.zoomBy(e.magnification, e.clientX, e.clientY)
+}
+
+Canvas.prototype.setDocument = function(doc) {
+  var root = document.importNode(doc.documentElement, true)
+  this.el.replaceChild(root, this.svg)
+  this.svg = root
+  this.updateViewBox()
 }
 
 Canvas.prototype.scrollBy = function(deltaX, deltaY) {

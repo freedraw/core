@@ -36,7 +36,10 @@ Editor.prototype.getData = function(type) {
 }
 
 Editor.prototype.loadData = function(type, data) {
-  throw new Error("Unimplemented")
+  console.log(type, data)
+  if (type !== 'public.svg-image') throw new Error("Unimplemented")
+  var document = new DOMParser().parseFromString(data, 'image/svg+xml')
+  this.canvas.setDocument(document)
 }
 
 exports = Editor
