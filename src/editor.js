@@ -32,11 +32,11 @@ Editor.prototype.onResize = function() {
 }
 
 Editor.prototype.getData = function(type) {
-  throw new Error("Unimplemented")
+  throw new Error('Unimplemented')
 }
 
 Editor.prototype.loadData = function(type, data) {
-  if (type !== 'public.svg-image') throw new Error("Unimplemented")
+  if (type !== 'public.svg-image') throw new Error('Unimplemented')
   var document = new DOMParser().parseFromString(data, 'image/svg+xml')
   this.canvas.setDocument(document)
 }
