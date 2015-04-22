@@ -10,18 +10,20 @@
     this.path = path
   }
   Require.prototype.require = function(file) {
-    file = /\.\//.test(file) ? this.path + file.slice(1) : file
+    var base = file = /\.\//.test(file) ? this.path + file.slice(1) : file
     if (isDir[file]) {
       file += '/_index.js'
     } else {
-      var res = read(file + '/_index.js')
-      if (res.status === 200) {
-        isDir[file] = true
-        file += '/_index.js'
-      } else {
-        if (!/\.[^.]+$/.test(file)) file += '.js'
+      if (!/\.[^.]+$/.test(file)) file += '.js'
+      var res = read(file)
+      if (res.status !== 200) {
+        file = base + '/_index.js'
         res = read(file)
-        if (res.status !== 200) throw new Error('Cannot require "'+file+'".')
+        if (res.status === 200) {
+          isDir[base] = true
+        } else {
+          throw new Error('Cannot require "'+base+'".')
+        }
       }
     }
     if (cache[file]) return cache[file]
