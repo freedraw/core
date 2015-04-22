@@ -9,7 +9,9 @@ function ShapeNode(props, children) {
 }
 inherits(ShapeNode, DisplayNode)
 
-ShapeNode.prototype.drawEachLayerOn = function(cx, p) {
+ShapeNode.prototype.drawOn = function(cx) {
+  var p = new Path2D
+  this.pathOn(p)
   this.fills.forEach(function(fill) {
     cx.fillStyle = fill.style
     cx.fill(p)

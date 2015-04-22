@@ -32,6 +32,13 @@ function Canvas(editor) {
       transform: Matrix.skewX(Math.PI / 12)
     })
   ])
+  for (var i = 0; i < 1000; i++) {
+    new M.Rectangle({
+      fills: [{style: '#b7e'}],
+      strokes: [{style: '#000', width: 3}],
+      bounds: new Rect(i * 10 - 40, i * 15 - 40, 120, 90)
+    }).appendTo(this.model)
+  }
 
   this.el = h('.canvas', [
     this.modelCanvas = h('canvas'),

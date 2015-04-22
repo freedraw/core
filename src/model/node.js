@@ -26,7 +26,7 @@ Node.prototype.prepend = function(child) {
   child.parent = this
   return this
 }
-Node.prototype.appendTo = function(parent) {
+Node.prototype.prependTo = function(parent) {
   parent.children.unshift(this.detach())
   this.parent = parent
   return this

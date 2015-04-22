@@ -1,5 +1,6 @@
 exports = {
   Document: require('./document'),
   Artboard: require('./artboard'),
-  Ellipse: require('./ellipse')
+  Ellipse: require('./ellipse'),
+  Rectangle: require('./rectangle')
 }

@@ -1,5 +1,6 @@
 var h = require('html')
 var cursor = require('cursor')
+var emitter = require('emitter')
 
 function Panel(width, el) {
   this.width = width
@@ -14,6 +15,7 @@ function Panel(width, el) {
   this.onResizeEnd = this.onResizeEnd.bind(this)
   this.resizeOffset = 0
 }
+emitter(Panel.prototype)
 
 Panel.prototype.onResizeStart = function(e) {
   e.preventDefault()
@@ -26,6 +28,7 @@ Panel.prototype.onResizeMove = function(e) {
   e.preventDefault()
   this.width = Math.max(this.minWidth, this.resizeOffset + e.clientX)
   this.el.style.width = this.width + 'px'
+  this.emit('resize')
 }
 Panel.prototype.onResizeEnd = function(e) {
   e.preventDefault()

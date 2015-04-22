@@ -30,6 +30,7 @@ emitter.property(Editor.prototype, 'selection')
 Editor.prototype.start = function() {
   document.body.appendChild(this.el)
   addEventListener('resize', this.onResize.bind(this))
+  this.layers.on('resize', this.onResize, this)
   this.onResize()
   this.canvas.center = new Vec2(30, -20)
   this.canvas.scale = 1.5

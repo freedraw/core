@@ -69,6 +69,18 @@ Rect.prototype.include = function(p) {
   return new Rect(left, top, right - left, bottom - top)
 }
 
+Rect.prototype.contains = function(r) {
+  if (r.width === 0 || r.height === 0) return false
+  return r.x >= this.x && r.y >= this.y && r.x + r.width < this.x + this.width && r.y + r.height < this.y + this.height
+}
+Rect.prototype.intersects = function(r) {
+  if (this.width === 0 || this.height === 0 || r.width === 0 || r.height === 0) return false
+  return this.x < r.x + r.width && r.x < this.x + this.width && this.y < r.y + r.height && r.y < this.y + this.height
+}
+Rect.prototype.includes = function(p) {
+  return p.x >= this.x && p.y >= this.y && p.x < this.x + this.width && p.y < this.y + this.height
+}
+
 Rect.prototype.floor = function() {
   var left = Math.floor(this.x)
   var right = Math.floor(this.x + this.width)
