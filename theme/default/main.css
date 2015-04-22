@@ -142,6 +142,7 @@ input[type=range]:disabled {
   border-right: 1px solid rgb(184, 184, 184);
 }
 .canvas {
+  overflow: hidden;
   -webkit-flex: 1;
   position: relative;
   background: rgb(242, 242, 242);
@@ -269,22 +270,33 @@ input[type=range]:disabled {
 
 /* MARK: - Canvas */
 
-.canvas > svg {
+.canvas canvas,
+.canvas .container {
   position: absolute;
   width: 100%;
   height: 100%;
+  pointer-events: none;
 }
 .selection-handle {
-  stroke: black;
-  stroke-width: .5px;
-  fill: white;
+  box-shadow: .5px .5px 1px rgba(0,0,0,.4), 0 0 0 .6px rgba(0,0,0,.1);
+  background: linear-gradient(to bottom right, #fff, #ddd);
   pointer-events: auto;
+  width: 6px;
+  height: 6px;
+  margin: -3px;
+  position: absolute;
+  top: 0;
+  left: 0;
+  display: none;
 }
-.selection-handle[data-index='0'] {cursor: nw-resize}
-.selection-handle[data-index='1'] {cursor: n-resize}
-.selection-handle[data-index='2'] {cursor: ne-resize}
-.selection-handle[data-index='3'] {cursor: e-resize}
-.selection-handle[data-index='4'] {cursor: se-resize}
-.selection-handle[data-index='5'] {cursor: s-resize}
-.selection-handle[data-index='6'] {cursor: sw-resize}
-.selection-handle[data-index='7'] {cursor: w-resize}
+.selection-handle::before {
+  content: '';
+  display: block;
+  width: 100%;
+  height: 100%;
+  padding: 2px;
+  margin: -2px;
+  position: absolute;
+  top: 0;
+  left: 0;
+}

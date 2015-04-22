@@ -22,6 +22,9 @@ Rect.normalized = function(x, y, width, height) {
   }
   return new Rect(x, y, width, height)
 }
+Rect.centerHalf = function(center, half) {
+  return new Rect(center.x - half.x, center.y - half.y, half.x * 2, half.y * 2)
+}
 Rect.between = function(u, v) {
   var left, right, top, bottom
   if (u.x < v.x) { left = u.x; right = v.x }
@@ -110,9 +113,15 @@ Rect.prototype.center = function() {
 Rect.prototype.controlPoints = function() {
   return [this.topLeft(), this.topCenter(), this.topRight(), this.rightCenter(), this.bottomRight(), this.bottomCenter(), this.bottomLeft(), this.leftCenter()]
 }
+Rect.prototype.corners = function() {
+  return [this.topLeft(), this.topRight(), this.bottomRight(), this.bottomLeft()]
+}
 
 Rect.prototype.extent = function() {
   return new Vec2(this.width, this.height)
+}
+Rect.prototype.halfExtent = function() {
+  return new Vec2(this.width / 2, this.height / 2)
 }
 
 Rect.prototype.handlePoint = function(i) {

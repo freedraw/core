@@ -2,6 +2,7 @@ var h = require('html')
 var Panel = require('panel')
 var Canvas = require('canvas')
 var Inspector = require('inspector')
+var Vec2 = require('vec2')
 var emitter = require('emitter')
 
 function Editor() {
@@ -30,8 +31,9 @@ Editor.prototype.start = function() {
   document.body.appendChild(this.el)
   addEventListener('resize', this.onResize.bind(this))
   this.onResize()
+  this.canvas.center = new Vec2(30, -20)
+  this.canvas.scale = 1.5
   this.canvas.onResize()
-  this.canvas.zoomCenter()
   return this
 }
 

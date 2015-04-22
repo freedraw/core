@@ -18,49 +18,39 @@ var MIN_MID_HANDLE = 20 * 20
 function Canvas(editor) {
   this.editor = editor
 
-  this.handles = []
+  this.selectionHandles = []
   for (var i = 0; i < 8; i++) {
-    var handle = h('.selection-handle', {'data-index': i})
-    this.handles.push(handle)
+    var handle = h('.selection-handle', {dataset: {index: i}})
+    this.selectionHandles.push(handle)
   }
 
   this.model = new M.Document([
-    new M.Artboard({
-      extent: new Vec2(100, 200)
+    new M.Ellipse({
+      fills: [{style: '#eb7'}],
+      strokes: [{style: '#000', width: 3}],
+      radii: new Vec2(120, 90),
+      transform: Matrix.skewX(Math.PI / 12)
     })
   ])
-
-  /*
-  , {style: {pointerEvents: 'none'}}, [
-      this.selectionBox = svg('path', {style: {
-        fill: 'none',
-        stroke: 'rgb(185, 185, 185)',
-        strokeWidth: '0.5px'
-      }}
-  ].concat(
-      this.selectionHandleGroup = svg('g', {style: {display: 'none'}}, this.selectionHandles),
-      this.highlightPath = svg('path', {style: {
-        fill: 'none',
-        stroke: 'rgb(68, 192, 255)',
-        strokeWidth: '2px'
-      }})
-    ))
-  */
 
   this.el = h('.canvas', [
     this.modelCanvas = h('canvas'),
     h('.container', [
-      this.handleContainer = h('div', this.handles),
-      this.highlightCanvas = h('canvas')
+      this.selectionContainer = h('.selection-container', [
+        this.selectionCanvas = h('canvas')
+      ].concat(this.selectionHandles)),
+      this.highlightCanvas = h('canvas.highlight-canvas')
     ])
   ])
 
   this.modelContext = this.modelCanvas.getContext('2d')
   this.highlightContext = this.highlightCanvas.getContext('2d')
+  this.selectionContext = this.selectionCanvas.getContext('2d')
 
   this.viewport = Rect.zero
   this.screenToModel = Matrix.identity
   this.modelToScreen = Matrix.identity
+  this.modelToCanvas = Matrix.identity
 
   this.center = Vec2.zero
   this.scale = 1
@@ -91,29 +81,30 @@ Canvas.prototype.onMouseMove = function(e) {
   var object = this.editor.selection
   var drag = this.drag
   if (drag) {
-    var ctm = object.getScreenCTM().inverse()
+    var mat = object.localToGlobal().inverse().concat(this.screenToModel)
     switch (drag.kind) {
       case 'translate':
-        var u = drag.origin.transform(ctm)
-        var v = this.mouse.transform(ctm)
-        replaceBBox(object, drag.rect.translate(v.sub(u)))
+        var u = drag.origin.transform(mat)
+        var v = this.mouse.transform(mat)
+        object.setBoundingBox(drag.rect.translate(v.sub(u)))
+        this.redraw()
         this.editor.emit('selectionBoundsChange')
         return
       case 'resize':
-        var preserve = object.localName === 'circle' || e.shiftKey
+        var preserve = e.shiftKey
         var center = e.altKey
 
-        var ctm = object.getScreenCTM().inverse()
-        var v = this.mouse.transform(ctm)
+        var v = this.mouse.transform(mat)
         var rect = drag.rect.expandHandle(drag.handle, v, preserve, center)
-        replaceBBox(object, rect)
+        object.setBoundingBox(rect)
+        this.redraw()
         this.editor.emit('selectionBoundsChange')
         return
     }
     console.warn('Unimplemented drag:', drag.kind)
     return
   }
-  this.hoverObject(this.model)
+  this.hoverObject(this.model.nodeAt(this.mouse.transform(this.screenToModel)))
 }
 
 Canvas.prototype.onMouseDown = function(e) {
@@ -214,7 +205,7 @@ Canvas.prototype.onResize = function() {
 
   var pr = window.devicePixelRatio || 1
 
-  ;[this.modelCanvas, this.highlightCanvas].forEach(function(cv) {
+  ;[this.modelCanvas, this.highlightCanvas, this.selectionCanvas].forEach(function(cv) {
     cv.width = this.viewport.width * pr
     cv.height = this.viewport.height * pr
     cv.style.width = this.viewport.width + 'px'
@@ -222,18 +213,21 @@ Canvas.prototype.onResize = function() {
     cv.getContext('2d').scale(pr, pr)
   }, this)
 
+  this.selectionContext.translate(0.25, 0.25)
+
   this.updateViewBox()
 }
 
 Canvas.prototype.updateScreenMatrix = function() {
   this.screenToModel = Matrix
-    .translateBy(this.viewport.center().neg())
-    .scale(1 / this.scale)
     .translateBy(this.center)
-  this.modelToScreen = Matrix
-    .translateBy(this.viewport.center())
+    .scale(1 / this.scale)
+    .translateBy(this.viewport.center().neg())
+  this.modelToCanvas = Matrix
+    .translateBy(this.viewport.halfExtent())
     .scale(this.scale)
     .translateBy(this.center.neg())
+  this.modelToScreen = Matrix.translateBy(this.viewport.topLeft()).concat(this.modelToCanvas)
 }
 
 Canvas.prototype.redraw = function() {
@@ -251,52 +245,67 @@ Canvas.prototype.redraw = function() {
 }
 
 Canvas.prototype.hoverObject = function(object) {
-  this.highlightObject(object)
+  this.highlightObject(object === this.editor.selection ? null : object)
 }
 
 Canvas.prototype.updateSelectionBox = function() {
   var object = this.editor.selection
-  this.handleContainer.style.display = 'none'
+  this.selectionContainer.style.display = 'none'
   if (!object) return
 
-  var ctm = object.localToGlobal()
-  var bb = object.boundingBox()
+  var mat = this.modelToCanvas.concat(object.localToGlobal())
 
-  var points = bb.controlPoints()
+  var points = object.boundingBox().controlPoints().map(function(p) {
+    return p.transform(mat)
+  })
 
   var width = points[0].distanceSquared(points[2])
   var height = points[0].distanceSquared(points[6])
   if (width < MIN_HANDLE && height < MIN_HANDLE) return
 
-  this.handleContainer.style.display = 'block'
+  this.selectionContainer.style.display = 'block'
 
   var angle = points[2].sub(points[0]).angle()
   points.forEach(function(v, i) {
-    var handle = this.handles[i]
+    var handle = this.selectionHandles[i]
     var hide = i % 2 && (i % 4 === 1 ? width : height) < MIN_MID_HANDLE
     handle.style.display = hide ? 'none' : 'block'
     if (!hide) {
-      handle.style.transform = Matrix.translateBy(v).rotate(angle).translate(-3, -3).toCSS()
+      handle.style.transform = Matrix.translateBy(v).rotate(angle).toCSS()
       handle.style.cursor = cursor.resizeAlong(Math.PI * (3 - i) / 4 - angle)
     }
   }, this)
+
+  var cx = this.selectionContext
+  cx.clearRect(0, 0, this.viewport.width, this.viewport.height)
+  cx.beginPath()
+  cx.moveTo(points[0].x | 0, points[0].y | 0)
+  ;[2, 4, 6].forEach(function(i) {
+    cx.lineTo(points[i].x | 0, points[i].y | 0)
+  })
+  cx.closePath()
+  cx.strokeStyle = 'rgb(185, 185, 185)'
+  cx.lineWidth = 0.5
+  cx.stroke()
 }
 
 Canvas.prototype.highlightObject = function(object) {
   this.highlightedObject = object
 
-  this.highlightContext.clearRect(0, 0, this.viewport.width, this.viewport.height)
+  var cx = this.highlightContext
+  cx.clearRect(0, 0, this.viewport.width, this.viewport.height)
 
   if (!object) return
 
-  this.highlightContext.save()
-  this.modelToScreen.concat(object.localToGlobal()).transformContext(this.highlightContext)
-  object.pathOn(this.highlightContext)
-  this.highlightContext.restore()
+  cx.save()
+  cx.beginPath()
+  this.modelToCanvas.concat(object.localToGlobal()).transformContext(cx)
+  object.pathOn(cx)
+  cx.restore()
 
-  this.highlightContext.lineWidth = 2
-  this.highlightContext.strokeStyle = 'rgb(68, 192, 255)'
-  this.highlightContext.stroke()
+  cx.lineWidth = 2
+  cx.strokeStyle = 'rgb(68, 192, 255)'
+  cx.stroke()
 }
 
 exports = Canvas

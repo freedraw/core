@@ -6,6 +6,8 @@ var inherits = require('inherits')
 
 function DisplayNode(props, children) {
   this.transform = Matrix.identity
+  this.opacity = 1
+  this.blendMode = 'normal'
 
   Node.call(this)
 
@@ -37,6 +39,9 @@ DisplayNode.prototype.boundingBox = function() {
   }
   return bb
 }
+DisplayNode.prototype.setBoundingBox = function() {
+  // TODO
+}
 
 DisplayNode.prototype.pathOn = function(cx) {
   this.ownBoundingBox().pathOn(cx)
@@ -46,16 +51,18 @@ DisplayNode.prototype.isSolidAt = function() {
 }
 DisplayNode.prototype.drawOn = function(cx) {}
 DisplayNode.prototype.drawTreeOn = function(cx) {
+  cx.save()
+  this.transform.transformContext(cx)
   this.drawOn(cx)
   for (var i = 0, l = this.children.length; i < l; i++) {
     this.children[i].drawTreeOn(cx)
   }
+  cx.restore()
 }
 
 DisplayNode.prototype.nodeAt = function(p) {
   if (this.transform.determinant() === 0) return null
   var q = p.transform(this.transform.inverse())
-
   if (this.isSolidAt(q)) return this
 
   for (var i = this.children.length; i--;) {

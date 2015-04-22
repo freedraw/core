@@ -14,10 +14,10 @@ exports = function html(spec, attrs, children) {
   if (className) el.className = className
   if (attrs) for (var k in attrs) {
     var v = attrs[k]
-    if (k === 'style') {
-      var style = el.style
+    if (k === 'style' || k === 'dataset') {
+      var inner = el[k]
       for (var p in v) {
-        style[p] = v[p]
+        inner[p] = v[p]
       }
     } else {
       el[k] = v

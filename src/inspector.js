@@ -121,11 +121,12 @@ Inspector.prototype.onSelectionChange = function() {
 
 Inspector.prototype.onSelectionBoundsChange = function(e) {
   if (e && e.source === 'inspector') return
-  if (this.boundsChangeTimeout) return
-  this.boundsChangeTimeout = setTimeout(function() {
-    this.updateBoundsFields()
-    this.boundsChangeTimeout = null
-  }.bind(this), 100)
+  this.updateBoundsFields()
+  // if (this.boundsChangeTimeout) return
+  // this.boundsChangeTimeout = setTimeout(function() {
+  //   this.updateBoundsFields()
+  //   this.boundsChangeTimeout = null
+  // }.bind(this), 100)
 }
 
 Inspector.prototype.setUpFields = function() {
@@ -146,14 +147,14 @@ Inspector.prototype.updateFields = function() {
   var object = this.editor.selection
   if (!object) return
 
-  var style = getComputedStyle(object)
+  // var style = getComputedStyle(object)
 
   this.updateBoundsFields()
 
   this.inputOpacity.valueAsNumber =
-  this.inputOpacitySlider.valueAsNumber = style.opacity * 100
+  this.inputOpacitySlider.valueAsNumber = object.opacity * 100
 
-  this.inputBlending.value = style.mixBlendMode
+  this.inputBlending.value = object.blendMode
 }
 
 Inspector.prototype.updateBoundsFields = function() {
