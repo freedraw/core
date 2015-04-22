@@ -36,16 +36,13 @@ function Canvas(editor) {
   this.el = h('.canvas', [
     this.modelCanvas = h('canvas'),
     h('.container', [
-      this.selectionCanvas = h('canvas'),
-      this.selectionContainer = h('.selection-container', [
-      ].concat(this.selectionHandles)),
-      this.highlightCanvas = h('canvas.highlight-canvas')
+      this.uiCanvas = h('canvas'),
+      this.selectionContainer = h('.selection-container', this.selectionHandles)
     ])
   ])
 
   this.modelContext = this.modelCanvas.getContext('2d')
-  this.highlightContext = this.highlightCanvas.getContext('2d')
-  this.selectionContext = this.selectionCanvas.getContext('2d')
+  this.uiContext = this.uiCanvas.getContext('2d')
 
   this.viewport = Rect.zero
   this.screenToModel = Matrix.identity
@@ -205,15 +202,13 @@ Canvas.prototype.onResize = function() {
 
   var pr = window.devicePixelRatio || 1
 
-  ;[this.modelCanvas, this.highlightCanvas, this.selectionCanvas].forEach(function(cv) {
+  ;[this.modelCanvas, this.uiCanvas].forEach(function(cv) {
     cv.width = this.viewport.width * pr
     cv.height = this.viewport.height * pr
     cv.style.width = this.viewport.width + 'px'
     cv.style.height = this.viewport.height + 'px'
     cv.getContext('2d').scale(pr, pr)
   }, this)
-
-  this.selectionContext.translate(0.25, 0.25)
 
   this.updateViewBox()
 }
@@ -251,6 +246,7 @@ Canvas.prototype.hoverObject = function(object) {
 Canvas.prototype.updateSelectionBox = function() {
   var object = this.editor.selection
   this.selectionContainer.style.display = 'none'
+  this.redrawUI()
   if (!object) return
 
   var mat = this.modelToCanvas.concat(object.localToGlobal())
@@ -275,37 +271,48 @@ Canvas.prototype.updateSelectionBox = function() {
       handle.style.cursor = cursor.resizeAlong(Math.PI * (3 - i) / 4 - angle)
     }
   }, this)
-
-  var cx = this.selectionContext
-  cx.clearRect(0, 0, this.viewport.width, this.viewport.height)
-  cx.beginPath()
-  cx.moveTo(points[0].x | 0, points[0].y | 0)
-  ;[2, 4, 6].forEach(function(i) {
-    cx.lineTo(points[i].x | 0, points[i].y | 0)
-  })
-  cx.closePath()
-  cx.strokeStyle = 'rgb(185, 185, 185)'
-  cx.lineWidth = 0.5
-  cx.stroke()
 }
 
 Canvas.prototype.highlightObject = function(object) {
   this.highlightedObject = object
+  this.redrawUI()
+}
 
-  var cx = this.highlightContext
+Canvas.prototype.redrawUI = function() {
+  var cx = this.uiContext
   cx.clearRect(0, 0, this.viewport.width, this.viewport.height)
 
-  if (!object) return
+  var object = this.highlightedObject
+  if (object) {
+    cx.save()
+    cx.beginPath()
+    this.modelToCanvas.concat(object.localToGlobal()).transformContext(cx)
+    object.pathOn(cx)
+    cx.restore()
 
-  cx.save()
-  cx.beginPath()
-  this.modelToCanvas.concat(object.localToGlobal()).transformContext(cx)
-  object.pathOn(cx)
-  cx.restore()
+    cx.lineWidth = 2
+    cx.strokeStyle = 'rgb(68, 192, 255)'
+    cx.stroke()
+  }
 
-  cx.lineWidth = 2
-  cx.strokeStyle = 'rgb(68, 192, 255)'
-  cx.stroke()
+  if (object = this.editor.selection) {
+    var mat = this.modelToCanvas.concat(object.localToGlobal())
+    var points = object.boundingBox().corners().map(function(p) {
+      return p.transform(mat)
+    })
+    cx.save()
+    cx.translate(0.25, 0.25)
+    cx.beginPath()
+    cx.moveTo(points[0].x | 0, points[0].y | 0)
+    cx.lineTo(points[1].x | 0, points[1].y | 0)
+    cx.lineTo(points[2].x | 0, points[2].y | 0)
+    cx.lineTo(points[3].x | 0, points[3].y | 0)
+    cx.closePath()
+    cx.strokeStyle = 'rgb(185, 185, 185)'
+    cx.lineWidth = 0.5
+    cx.stroke()
+    cx.restore()
+  }
 }
 
 exports = Canvas
