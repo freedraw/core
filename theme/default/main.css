@@ -145,7 +145,7 @@ input[type=range]:disabled {
   overflow: hidden;
   -webkit-flex: 1;
   position: relative;
-  background: rgb(242, 242, 242);
+  background: rgb(255, 255, 255);
 }
 .inspector.panel {
   width: 213px;
