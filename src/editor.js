@@ -4,6 +4,7 @@ var Canvas = require('canvas')
 var Inspector = require('inspector')
 var Vec2 = require('vec2')
 var emitter = require('emitter')
+var M = require('model')
 
 function Editor() {
   this.layers = new Panel(215, h('.layers panel', [
@@ -47,9 +48,10 @@ Editor.prototype.getData = function(type) {
 }
 
 Editor.prototype.loadData = function(type, data) {
+  return // TODO implement M.load
   if (type !== 'public.svg-image') throw new Error('Unimplemented')
   var document = new DOMParser().parseFromString(data, 'image/svg+xml')
-  this.canvas.setDocument(document)
+  this.canvas.setDocument(M.load(document))
 }
 
 exports = Editor

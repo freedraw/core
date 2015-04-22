@@ -24,7 +24,7 @@ function Canvas(editor) {
     this.selectionHandles.push(handle)
   }
 
-  this.model = new M.Document([
+  this.document = new M.Document([
     new M.Ellipse({
       fills: [{style: '#eb7'}],
       strokes: [{style: '#000', width: 3}],
@@ -37,24 +37,24 @@ function Canvas(editor) {
       fills: [{style: '#b7e'}],
       strokes: [{style: '#000', width: 3}],
       bounds: new Rect(i * 10 - 40, i * 15 - 40, 120, 90)
-    }).appendTo(this.model)
+    }).appendTo(this.document)
   }
 
   this.el = h('.canvas', [
-    this.modelCanvas = h('canvas'),
+    this.documentCanvas = h('canvas'),
     h('.container', [
       this.uiCanvas = h('canvas'),
       this.selectionContainer = h('.selection-container', this.selectionHandles)
     ])
   ])
 
-  this.modelContext = this.modelCanvas.getContext('2d')
+  this.documentContext = this.documentCanvas.getContext('2d')
   this.uiContext = this.uiCanvas.getContext('2d')
 
   this.viewport = Rect.zero
   this.screenToModel = Matrix.identity
-  this.modelToScreen = Matrix.identity
-  this.modelToCanvas = Matrix.identity
+  this.documentToScreen = Matrix.identity
+  this.documentToCanvas = Matrix.identity
 
   this.center = Vec2.zero
   this.scale = 1
@@ -108,7 +108,7 @@ Canvas.prototype.onMouseMove = function(e) {
     console.warn('Unimplemented drag:', drag.kind)
     return
   }
-  this.hoverObject(this.model.nodeAt(this.mouse.transform(this.screenToModel)))
+  this.hoverObject(this.document.nodeAt(this.mouse.transform(this.screenToModel)))
 }
 
 Canvas.prototype.onMouseDown = function(e) {
@@ -125,7 +125,7 @@ Canvas.prototype.onMouseDown = function(e) {
     }
     return
   }
-  var object = this.model.nodeAt(this.mouse.transform(this.screenToModel))
+  var object = this.document.nodeAt(this.mouse.transform(this.screenToModel))
   if (this.editor.selection = object) {
     cursor.push('-webkit-grabbing')
     this.drag = {
@@ -157,10 +157,8 @@ Canvas.prototype.onMagnify = function(e) {
 }
 
 Canvas.prototype.setDocument = function(doc) {
-  return // TODO implement model.load
-  this.model = model.load(doc, true)
-  this.model = root
-  this.center = this.model.boundingBox().center()
+  this.document = doc
+  this.center = this.document.boundingBox().center()
 }
 
 Canvas.prototype.scrollBy = function(delta) {
@@ -181,7 +179,7 @@ Canvas.prototype.zoomTo = function(scale, center) {
 }
 
 Canvas.prototype.zoomCenter = function() {
-  var bb = this.model.boundingBox()
+  var bb = this.document.boundingBox()
   this.center = bb.center()
   this.scale = Math.max(ZOOM_MIN, Math.min(ZOOM_MAX, this.viewport.width * ZOOM_CENTER_SPACE / bb.width, this.viewport.height * ZOOM_CENTER_SPACE / bb.height))
   this.updateViewBox() // TODO animate, using cached canvas
@@ -196,7 +194,7 @@ Canvas.prototype.updateViewBox = function() {
   this.updateScreenMatrix()
   this.redraw()
 
-  var t = this.model.nodeAt(this.mouse.transform(this.screenToModel))
+  var t = this.document.nodeAt(this.mouse.transform(this.screenToModel))
   this.hoverObject(t)
 
   if (this.editor.selection) {
@@ -209,7 +207,7 @@ Canvas.prototype.onResize = function() {
 
   var pr = window.devicePixelRatio || 1
 
-  ;[this.modelCanvas, this.uiCanvas].forEach(function(cv) {
+  ;[this.documentCanvas, this.uiCanvas].forEach(function(cv) {
     cv.width = this.viewport.width * pr
     cv.height = this.viewport.height * pr
     cv.style.width = this.viewport.width + 'px'
@@ -225,25 +223,25 @@ Canvas.prototype.updateScreenMatrix = function() {
     .translateBy(this.center)
     .scale(1 / this.scale)
     .translateBy(this.viewport.center().neg())
-  this.modelToCanvas = Matrix
+  this.documentToCanvas = Matrix
     .translateBy(this.viewport.halfExtent())
     .scale(this.scale)
     .translateBy(this.center.neg())
-  this.modelToScreen = Matrix.translateBy(this.viewport.topLeft()).concat(this.modelToCanvas)
+  this.documentToScreen = Matrix.translateBy(this.viewport.topLeft()).concat(this.documentToCanvas)
 }
 
 Canvas.prototype.redraw = function() {
   var pr = window.devicePixelRatio || 1
 
-  this.modelContext.clearRect(0, 0, this.viewport.width, this.viewport.height)
-  this.modelContext.save()
+  this.documentContext.clearRect(0, 0, this.viewport.width, this.viewport.height)
+  this.documentContext.save()
 
-  this.modelContext.translate(this.viewport.width / 2, this.viewport.height / 2)
-  this.modelContext.scale(this.scale, this.scale)
-  this.modelContext.translate(-this.center.x, -this.center.y)
+  this.documentContext.translate(this.viewport.width / 2, this.viewport.height / 2)
+  this.documentContext.scale(this.scale, this.scale)
+  this.documentContext.translate(-this.center.x, -this.center.y)
 
-  this.model.drawTreeOn(this.modelContext)
-  this.modelContext.restore()
+  this.document.drawTreeOn(this.documentContext)
+  this.documentContext.restore()
 }
 
 Canvas.prototype.hoverObject = function(object) {
@@ -256,7 +254,7 @@ Canvas.prototype.updateSelectionBox = function() {
   this.redrawUI()
   if (!object) return
 
-  var mat = this.modelToCanvas.concat(object.localToGlobal())
+  var mat = this.documentToCanvas.concat(object.localToGlobal())
 
   var points = object.boundingBox().controlPoints().map(function(p) {
     return p.transform(mat)
@@ -293,7 +291,7 @@ Canvas.prototype.redrawUI = function() {
   if (object) {
     cx.save()
     cx.beginPath()
-    this.modelToCanvas.concat(object.localToGlobal()).transformContext(cx)
+    this.documentToCanvas.concat(object.localToGlobal()).transformContext(cx)
     object.pathOn(cx)
     cx.restore()
 
@@ -303,7 +301,7 @@ Canvas.prototype.redrawUI = function() {
   }
 
   if (object = this.editor.selection) {
-    var mat = this.modelToCanvas.concat(object.localToGlobal())
+    var mat = this.documentToCanvas.concat(object.localToGlobal())
     var points = object.boundingBox().corners().map(function(p) {
       return p.transform(mat)
     })
