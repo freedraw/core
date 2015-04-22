@@ -1,7 +1,8 @@
+var Native = require('native')
 var mouseDispatcher = require('./mouse-dispatcher')
 
-Hooks.dispatchGestureStart = mouseDispatcher('gesturestart')
-Hooks.dispatchGestureEnd = mouseDispatcher('gestureend')
-Hooks.dispatchMagnify = mouseDispatcher('magnify', function(delta) {
+Native.hooks.dispatchGestureStart = mouseDispatcher('gesturestart')
+Native.hooks.dispatchGestureEnd = mouseDispatcher('gestureend')
+Native.hooks.dispatchMagnify = mouseDispatcher('magnify', function(delta) {
   this.magnification = delta
 })

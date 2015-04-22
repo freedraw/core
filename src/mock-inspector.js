@@ -1,4 +1,4 @@
-var h = require('html')
+var h = require('fd/html')
 
 function MockInspector() {
   this.el = h('.inspector panel', [
@@ -96,4 +96,4 @@ function MockInspector() {
   ])
 }
 
-exports = MockInspector
+module.exports = MockInspector

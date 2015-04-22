@@ -1,7 +1,7 @@
 var ShapeNode = require('./shape-node')
-var Vec2 = require('vec2')
-var Rect = require('rect')
-var inherits = require('inherits')
+var Vec2 = require('fd/vec2')
+var Rect = require('fd/rect')
+var inherits = require('fd/inherits')
 
 function Rectangle(props, children) {
   this.bounds = new Rect(0, 0, 100, 100)
@@ -25,4 +25,4 @@ Rectangle.prototype.pathOn = function(cx) {
   cx.rect(this.bounds.x, this.bounds.y, this.bounds.width, this.bounds.height)
 }
 
-exports = Rectangle
+module.exports = Rectangle

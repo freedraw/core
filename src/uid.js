@@ -1,5 +1,5 @@
 var id = 0
 
-exports = function uid() {
+module.exports = function uid() {
   return 'a' + ++id
 }

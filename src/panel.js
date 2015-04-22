@@ -1,6 +1,6 @@
-var h = require('html')
-var cursor = require('cursor')
-var emitter = require('emitter')
+var h = require('fd/html')
+var cursor = require('fd/cursor')
+var emitter = require('fd/emitter')
 
 function Panel(width, el) {
   this.width = width
@@ -37,4 +37,4 @@ Panel.prototype.onResizeEnd = function(e) {
   cursor.pop()
 }
 
-exports = Panel
+module.exports = Panel

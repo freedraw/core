@@ -1,0 +1,7 @@
+{
+  "name": "freedraw-core",
+  "main": "src/main.js",
+  "browser": {
+    "native": "fd/native-placeholder"
+  }
+}

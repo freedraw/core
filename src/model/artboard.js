@@ -1,7 +1,7 @@
 var DisplayNode = require('./display-node')
-var Vec2 = require('vec2')
-var Rect = require('rect')
-var inherits = require('inherits')
+var Vec2 = require('fd/vec2')
+var Rect = require('fd/rect')
+var inherits = require('fd/inherits')
 
 function Artboard(props, children) {
   this.extent = new Vec2(256, 256)
@@ -37,4 +37,4 @@ Artboard.prototype.drawOn = function(cx) {
   cx.restore()
 }
 
-exports = Artboard
+module.exports = Artboard

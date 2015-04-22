@@ -1,6 +1,6 @@
 var line = 40
 
-exports = function convertWheelUnits(e, pageWidth, pageHeight, pageDepth) {
+module.exports = function convertWheelUnits(e, pageWidth, pageHeight, pageDepth) {
   var x = e.deltaX
   var y = e.deltaY
   var z = e.deltaZ

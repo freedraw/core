@@ -97,4 +97,4 @@ Object.defineProperties(Node.prototype, {
   }}
 })
 
-exports = Node
+module.exports = Node

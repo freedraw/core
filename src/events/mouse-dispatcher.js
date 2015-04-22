@@ -1,6 +1,6 @@
 var slice = [].slice
 
-exports = function mouseDispatcher(name, fn) {
+module.exports = function mouseDispatcher(name, fn) {
   return function(clientX, clientY, shiftKey, ctrlKey, altKey, metaKey) {
     var target = document.elementFromPoint(clientX, clientY) || document
     var event = new MouseEvent(name, {

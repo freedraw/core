@@ -94,4 +94,4 @@ Vec2.zero = new Vec2(0, 0)
 Vec2.one = new Vec2(1, 1)
 
 
-exports = Vec2
+module.exports = Vec2

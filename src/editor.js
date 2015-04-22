@@ -1,10 +1,10 @@
-var h = require('html')
-var Panel = require('panel')
-var Canvas = require('canvas')
-var Inspector = require('inspector')
-var Vec2 = require('vec2')
-var emitter = require('emitter')
-var M = require('model')
+var h = require('fd/html')
+var Panel = require('fd/panel')
+var Canvas = require('fd/canvas')
+var Inspector = require('fd/inspector')
+var Vec2 = require('fd/vec2')
+var emitter = require('fd/emitter')
+var M = require('fd/model')
 
 function Editor() {
   this.layers = new Panel(215, h('.layers panel', [
@@ -54,4 +54,4 @@ Editor.prototype.loadData = function(type, data) {
   this.canvas.setDocument(M.load(document))
 }
 
-exports = Editor
+module.exports = Editor

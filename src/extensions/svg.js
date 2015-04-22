@@ -1,7 +1,7 @@
-var extend = require('extend')
-var Vec2 = require('vec2')
-var Rect = require('rect')
-var Matrix = require('matrix')
+var extend = require('fd/extend')
+var Vec2 = require('fd/vec2')
+var Rect = require('fd/rect')
+var Matrix = require('fd/matrix')
 
 extend(SVGPoint.prototype, Vec2.prototype)
 extend(SVGRect.prototype, Rect.prototype)

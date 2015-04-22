@@ -1,4 +1,4 @@
-exports = function html(spec, attrs, children) {
+module.exports = function html(spec, attrs, children) {
   if (Array.isArray(attrs)) {
     children = attrs
     attrs = null

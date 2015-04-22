@@ -1,4 +1,4 @@
-var h = require('html')
+var h = require('fd/html')
 
 var stack = []
 var cursor = null

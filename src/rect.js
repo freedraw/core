@@ -1,4 +1,4 @@
-var Vec2 = require('vec2')
+var Vec2 = require('fd/vec2')
 
 function Rect(x, y, width, height) {
   this.x = x
@@ -187,4 +187,4 @@ Rect.prototype.pathOn = function(cx) {
   cx.rect(this.x, this.y, this.width, this.height)
 }
 
-exports = Rect
+module.exports = Rect

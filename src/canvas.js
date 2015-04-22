@@ -1,12 +1,12 @@
-var h = require('html')
-var M = require('model')
-var Vec2 = require('vec2')
-var Rect = require('rect')
-var Matrix = require('matrix')
-var commands = require('commands')
-var cursor = require('cursor')
-var convertWheelUnits = require('convert-wheel-units')
-var replaceBBox = require('replace-bbox')
+var h = require('fd/html')
+var M = require('fd/model')
+var Vec2 = require('fd/vec2')
+var Rect = require('fd/rect')
+var Matrix = require('fd/matrix')
+var commands = require('fd/commands')
+var cursor = require('fd/cursor')
+var convertWheelUnits = require('fd/convert-wheel-units')
+var replaceBBox = require('fd/replace-bbox')
 
 var ZOOM_MAX = 64
 var ZOOM_MIN = .01
@@ -320,4 +320,4 @@ Canvas.prototype.redrawUI = function() {
   }
 }
 
-exports = Canvas
+module.exports = Canvas

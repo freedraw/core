@@ -1,7 +1,8 @@
-var emitter = require('emitter')
+var Native = require('native')
+var emitter = require('fd/emitter')
 
-exports = emitter({})
+module.exports = emitter({})
 
-Hooks.runCommand = function(name) {
+Native.hooks.runCommand = function(name) {
   exports.emit(name)
 }

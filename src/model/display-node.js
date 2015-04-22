@@ -1,8 +1,8 @@
 var Node = require('./node')
-var Matrix = require('matrix')
-var Rect = require('rect')
-var extend = require('extend')
-var inherits = require('inherits')
+var Matrix = require('fd/matrix')
+var Rect = require('fd/rect')
+var extend = require('fd/extend')
+var inherits = require('fd/inherits')
 
 function DisplayNode(props, children) {
   this.transform = Matrix.identity
@@ -84,4 +84,4 @@ DisplayNode.prototype.nodeAt = function(p) {
   return null
 }
 
-exports = DisplayNode
+module.exports = DisplayNode

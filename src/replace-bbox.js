@@ -1,4 +1,4 @@
-exports = function replaceBBox(object, rect) {
+module.exports = function replaceBBox(object, rect) {
   switch (object.localName) {
     case 'ellipse':
     case 'circle':

@@ -1,6 +1,6 @@
 var slice = [].slice
 
-exports = function(object) {
+function emitter(object) {
 
   object.on = function(name, fn, context, once) {
     var map = this.listeners || (this.listeners = Object.create(null))
@@ -44,7 +44,7 @@ exports = function(object) {
   return object
 }
 
-exports.property = function(object, name) {
+emitter.property = function(object, name) {
   var data = '_' + name
   var event = name + 'Change'
   Object.defineProperty(object, name, {
@@ -55,3 +55,5 @@ exports.property = function(object, name) {
     }
   })
 }
+
+module.exports = emitter

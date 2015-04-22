@@ -1,4 +1,4 @@
-exports = function extend(o, p) {
+module.exports = function extend(o, p) {
   for (var k in p) {
     o[k] = p[k]
   }

@@ -1,6 +1,6 @@
-var h = require('html')
-var replaceBBox = require('replace-bbox')
-var Rect = require('rect')
+var h = require('fd/html')
+var replaceBBox = require('fd/replace-bbox')
+var Rect = require('fd/rect')
 
 function Inspector(editor) {
   this.editor = editor
@@ -200,4 +200,4 @@ Inspector.prototype.updateBlending = function() {
   object.blendMode = this.inputBlending.value
 }
 
-exports = Inspector
+module.exports = Inspector

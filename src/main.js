@@ -1,16 +1,19 @@
-var Editor = require('editor')
-var css = require('css')
+var Editor = require('fd/editor')
+var css = require('fd/css')
+var Native = require('native')
 
-require('events')
-require('commands')
-require('extensions')
+require('fd/events')
+require('fd/commands')
+require('fd/extensions')
 
-exports = new Editor()
-Hooks.getData = exports.getData.bind(exports)
-Hooks.loadData = exports.loadData.bind(exports)
+var editor = new Editor
+module.exports = editor
+
+Native.hooks.getData = editor.getData.bind(editor)
+Native.hooks.loadData = editor.loadData.bind(editor)
 
 css.load('theme/default/main.css').then(function() {
-  exports.start()
+  editor.start()
 }).done()
 
 Native.done()

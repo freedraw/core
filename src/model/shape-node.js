@@ -1,5 +1,5 @@
 var DisplayNode = require('./display-node')
-var inherits = require('inherits')
+var inherits = require('fd/inherits')
 
 function ShapeNode(props, children) {
   this.fills = []
@@ -23,4 +23,4 @@ ShapeNode.prototype.drawOn = function(cx) {
   })
 }
 
-exports = ShapeNode
+module.exports = ShapeNode

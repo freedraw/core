@@ -1,9 +1,9 @@
 var DisplayNode = require('./display-node')
-var inherits = require('inherits')
+var inherits = require('fd/inherits')
 
 function Document(props, children) {
   DisplayNode.call(this, props, children)
 }
 inherits(Document, DisplayNode)
 
-exports = Document
+module.exports = Document
