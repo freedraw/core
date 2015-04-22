@@ -4,10 +4,19 @@
   "browser": {
     "native": "fd/native-placeholder"
   },
+  "browserify": {
+    "transform": ["browserify-css"]
+  },
+  "browserify-css": {
+    "autoInject": true,
+    "minify": true,
+    "rootDir": "node_modules/fd/theme/default"
+  },
   "scripts": {
-    "start": "budo node_modules/fd/main.js --live | garnish"
+    "start": "budo node_modules/fd/main.js --live -t browserify-css | garnish"
   },
   "devDependencies": {
+    "browserify-css": "^0.6.1",
     "budo": "^3.1.1",
     "garnish": "^2.1.3",
     "watchify": "^3.1.2"
