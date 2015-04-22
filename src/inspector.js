@@ -160,7 +160,7 @@ Inspector.prototype.updateBoundsFields = function() {
   var object = this.editor.selection
   if (!object) return
 
-  var bb = object.getBBox().floor()
+  var bb = object.boundingBox().floor()
   this.inputX.valueAsNumber = bb.x
   this.inputY.valueAsNumber = bb.y
   this.inputWidth.valueAsNumber = bb.width
@@ -179,7 +179,7 @@ Inspector.prototype.updateOpacity = function() {
   if (!object) return
 
   var value = Math.max(0, Math.min(100, this.inputOpacity.valueAsNumber))
-  object.style.opacity = value / 100
+  object.opacity = value / 100
   this.inputOpacitySlider.valueAsNumber = value
 }
 
@@ -188,7 +188,7 @@ Inspector.prototype.updateOpacityFromSlider = function() {
   if (!object) return
 
   var value = Math.max(0, Math.min(100, this.inputOpacitySlider.valueAsNumber))
-  object.style.opacity = value / 100
+  object.opacity = value / 100
   this.inputOpacity.valueAsNumber = value
 }
 
@@ -196,7 +196,7 @@ Inspector.prototype.updateBlending = function() {
   var object = this.editor.selection
   if (!object) return
 
-  object.style.mixBlendMode = this.inputBlending.value
+  object.blendMode = this.inputBlending.value
 }
 
 exports = Inspector

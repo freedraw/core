@@ -144,4 +144,12 @@ Matrix.prototype.toSVG = function(svg) {
   return m
 }
 
+Matrix.prototype.toCSS = function() {
+  return 'matrix(' + this.a + ',' + this.b + ',' + this.c + ',' + this.d + ',' + this.e + ',' + this.f + ')'
+}
+
+Matrix.prototype.transformContext = function(context) {
+  context.transform(this.a, this.b, this.c, this.d, this.e, this.f)
+}
+
 exports = Matrix

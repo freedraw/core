@@ -107,6 +107,14 @@ Rect.prototype.center = function() {
   return new Vec2(this.x + this.width / 2, this.y + this.height / 2)
 }
 
+Rect.prototype.controlPoints = function() {
+  return [this.topLeft(), this.topCenter(), this.topRight(), this.rightCenter(), this.bottomRight(), this.bottomCenter(), this.bottomLeft(), this.leftCenter()]
+}
+
+Rect.prototype.extent = function() {
+  return new Vec2(this.width, this.height)
+}
+
 Rect.prototype.handlePoint = function(i) {
   i = i % 8
   if (i < 0) i += 8
@@ -154,5 +162,8 @@ Rect.prototype.toSVG = function(svg) {
   return r
 }
 
+Rect.prototype.pathOn = function(cx) {
+  cx.rect(this.x, this.y, this.width, this.height)
+}
 
 exports = Rect

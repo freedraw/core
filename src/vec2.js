@@ -6,20 +6,38 @@ function Vec2(x, y) {
 Vec2.prototype.add = function(p) {
   return new Vec2(this.x + p.x, this.y + p.y)
 }
+Vec2.prototype.add2 = function(x, y) {
+  return new Vec2(this.x + x, this.y + y)
+}
 Vec2.prototype.sub = function(p) {
   return new Vec2(this.x - p.x, this.y - p.y)
+}
+Vec2.prototype.sub2 = function(x, y) {
+  return new Vec2(this.x - x, this.y - y)
 }
 Vec2.prototype.mul = function(p) {
   return new Vec2(this.x * p.x, this.y * p.y)
 }
+Vec2.prototype.mul2 = function(x, y) {
+  return new Vec2(this.x * x, this.y * y)
+}
 Vec2.prototype.min = function(p) {
   return new Vec2(Math.min(this.x, p.x), Math.min(this.y, p.y))
+}
+Vec2.prototype.min2 = function(x, y) {
+  return new Vec2(Math.min(this.x, x), Math.min(this.y, y))
 }
 Vec2.prototype.max = function(p) {
   return new Vec2(Math.max(this.x, p.x), Math.max(this.y, p.y))
 }
+Vec2.prototype.max2 = function(x, y) {
+  return new Vec2(Math.max(this.x, x), Math.max(this.y, y))
+}
 Vec2.prototype.scale = function(f) {
   return new Vec2(this.x * f, this.y * f)
+}
+Vec2.prototype.scaleInv = function(f) {
+  return new Vec2(this.x / f, this.y / f)
 }
 
 Vec2.prototype.transform = function(m) {
@@ -55,6 +73,9 @@ Vec2.prototype.sgn = function() {
 }
 Vec2.prototype.abs = function() {
   return new Vec2(Math.abs(this.x), Math.abs(this.y))
+}
+Vec2.prototype.neg = function() {
+  return new Vec2(-this.x, -this.y)
 }
 Vec2.prototype.angle = function() {
   return Math.atan2(this.y, this.x)

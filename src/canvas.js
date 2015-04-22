@@ -1,5 +1,5 @@
 var h = require('html')
-var svg = require('svg-util')
+var M = require('model')
 var Vec2 = require('vec2')
 var Rect = require('rect')
 var Matrix = require('matrix')
@@ -18,21 +18,26 @@ var MIN_MID_HANDLE = 20 * 20
 function Canvas(editor) {
   this.editor = editor
 
-  this.selectionHandles = []
+  this.handles = []
   for (var i = 0; i < 8; i++) {
-    var handle = svg('rect', {class: 'selection-handle', 'data-index': i, width: 6, height: 6})
-    this.selectionHandles.push(handle)
+    var handle = h('.selection-handle', {'data-index': i})
+    this.handles.push(handle)
   }
 
-  this.el = h('.canvas', [
-    this.svg = svg('svg'),
-    this.ui = svg('svg', {style: {pointerEvents: 'none'}}, [
+  this.model = new M.Document([
+    new M.Artboard({
+      extent: new Vec2(100, 200)
+    })
+  ])
+
+  /*
+  , {style: {pointerEvents: 'none'}}, [
       this.selectionBox = svg('path', {style: {
         fill: 'none',
         stroke: 'rgb(185, 185, 185)',
         strokeWidth: '0.5px'
-      }})
-    ].concat(
+      }}
+  ].concat(
       this.selectionHandleGroup = svg('g', {style: {display: 'none'}}, this.selectionHandles),
       this.highlightPath = svg('path', {style: {
         fill: 'none',
@@ -40,14 +45,27 @@ function Canvas(editor) {
         strokeWidth: '2px'
       }})
     ))
+  */
+
+  this.el = h('.canvas', [
+    this.modelCanvas = h('canvas'),
+    h('.container', [
+      this.handleContainer = h('div', this.handles),
+      this.highlightCanvas = h('canvas')
+    ])
   ])
 
-  this.centerX = 0
-  this.centerY = 0
+  this.modelContext = this.modelCanvas.getContext('2d')
+  this.highlightContext = this.highlightCanvas.getContext('2d')
+
+  this.viewport = Rect.zero
+  this.screenToModel = Matrix.identity
+  this.modelToScreen = Matrix.identity
+
+  this.center = Vec2.zero
   this.scale = 1
 
-  this.mouseX = NaN
-  this.mouseY = NaN
+  this.mouse = Vec2.zero
   this.highlightedObject = null
 
   this.drag = null
@@ -59,18 +77,17 @@ function Canvas(editor) {
   this.el.addEventListener('gestureend', this.constrainZoom.bind(this))
   this.el.addEventListener('wheel', this.onWheel.bind(this))
 
-  commands.on('zoom0', this.zoomTo.bind(this, 1))
+  commands.on('zoom0', this.zoomTo.bind(this, 1, null))
   commands.on('zoomCenter', this.zoomCenter, this)
-  commands.on('zoomIn', this.zoomBy.bind(this, ZOOM_FACTOR - 1))
-  commands.on('zoomOut', this.zoomBy.bind(this, 1 / ZOOM_FACTOR - 1))
+  commands.on('zoomIn', this.zoomBy.bind(this, ZOOM_FACTOR - 1, null))
+  commands.on('zoomOut', this.zoomBy.bind(this, 1 / ZOOM_FACTOR - 1, null))
 
   editor.on('selectionChange', this.updateSelectionBox, this)
   editor.on('selectionBoundsChange', this.updateSelectionBox, this)
 }
 
 Canvas.prototype.onMouseMove = function(e) {
-  this.mouseX = e.clientX
-  this.mouseY = e.clientY
+  this.mouse = new Vec2(e.clientX, e.clientY)
   var object = this.editor.selection
   var drag = this.drag
   if (drag) {
@@ -78,7 +95,7 @@ Canvas.prototype.onMouseMove = function(e) {
     switch (drag.kind) {
       case 'translate':
         var u = drag.origin.transform(ctm)
-        var v = new Vec2(this.mouseX, this.mouseY).transform(ctm)
+        var v = this.mouse.transform(ctm)
         replaceBBox(object, drag.rect.translate(v.sub(u)))
         this.editor.emit('selectionBoundsChange')
         return
@@ -87,7 +104,7 @@ Canvas.prototype.onMouseMove = function(e) {
         var center = e.altKey
 
         var ctm = object.getScreenCTM().inverse()
-        var v = new Vec2(this.mouseX, this.mouseY).transform(ctm)
+        var v = this.mouse.transform(ctm)
         var rect = drag.rect.expandHandle(drag.handle, v, preserve, center)
         replaceBBox(object, rect)
         this.editor.emit('selectionBoundsChange')
@@ -96,30 +113,30 @@ Canvas.prototype.onMouseMove = function(e) {
     console.warn('Unimplemented drag:', drag.kind)
     return
   }
-  this.hoverObject(e.target)
+  this.hoverObject(this.model)
 }
 
 Canvas.prototype.onMouseDown = function(e) {
   this.highlightObject(null)
-  this.mouseX = e.clientX
-  this.mouseY = e.clientY
+  this.mouse = new Vec2(e.clientX, e.clientY)
 
   var t = e.target
   if (t.matches('.selection-handle')) {
     cursor.push(t.style.cursor)
     this.drag = {
       kind: 'resize',
-      rect: this.editor.selection.getBBox(),
+      rect: this.editor.selection.boundingBox(),
       handle: +t.dataset.index
     }
     return
   }
-  if (this.editor.selection = t === this.svg ? null : t) {
+  var object = this.model.nodeAt(this.mouse.transform(this.screenToModel))
+  if (this.editor.selection = object) {
     cursor.push('-webkit-grabbing')
     this.drag = {
       kind: 'translate',
-      rect: this.editor.selection.getBBox(),
-      origin: new Vec2(this.mouseX, this.mouseY)
+      rect: this.editor.selection.boundingBox(),
+      origin: this.mouse
     }
   }
 }
@@ -131,135 +148,135 @@ Canvas.prototype.onMouseUp = function() {
 
 Canvas.prototype.onWheel = function(e) {
   e.preventDefault()
-  var viewport = this.el.getBoundingClientRect()
-  var delta = convertWheelUnits(e, viewport.width, viewport.height, 0)
+  var delta = convertWheelUnits(e, this.viewport.width, this.viewport.height, 0)
   if (e.metaKey || e.ctrlKey) {
-    this.zoomBy(-delta.y / 120, e.clientX, e.clientY)
+    this.zoomBy(-delta.y / 120, new Vec2(e.clientX, e.clientY))
   } else {
-    this.scrollBy(delta.x, delta.y)
+    this.scrollBy(new Vec2(delta.x, delta.y))
   }
 }
 
 Canvas.prototype.onMagnify = function(e) {
   e.stopPropagation()
-  this.zoomBy(e.magnification, e.clientX, e.clientY)
+  this.zoomBy(e.magnification, new Vec2(e.clientX, e.clientY))
 }
 
 Canvas.prototype.setDocument = function(doc) {
-  var root = document.importNode(doc.documentElement, true)
-  this.el.replaceChild(root, this.svg)
-  this.svg = root
-  var viewport = this.el.getBoundingClientRect()
-  var bb = this.svg.getBBox()
-  this.centerX = bb.x + bb.width / 2
-  this.centerY = bb.y + bb.height / 2
+  return // TODO implement model.load
+  this.model = model.load(doc, true)
+  this.model = root
+  this.center = this.model.boundingBox().center()
 }
 
-Canvas.prototype.scrollBy = function(deltaX, deltaY) {
-  this.centerX += deltaX / this.scale
-  this.centerY += deltaY / this.scale
-  this.updateViewBox()
+Canvas.prototype.scrollBy = function(delta) {
+  this.center = this.center.add(delta.scaleInv(this.scale))
+  this.updateViewBox() // TODO be efficient about this
 }
 
-Canvas.prototype.zoomBy = function(delta, x, y) {
-  var viewport = this.el.getBoundingClientRect()
+Canvas.prototype.zoomBy = function(delta, center) {
   this.scale *= 1 + delta
-  if (x != null && x === x) {
-    var dx = (viewport.left + viewport.width / 2 - x) / this.scale
-    var dy = (viewport.top + viewport.height / 2 - y) / this.scale
-    this.centerX -= delta * dx
-    this.centerY -= delta * dy
+  if (center != null) {
+    this.center = this.center.sub(this.viewport.center().sub(center).scale(delta / this.scale))
   }
-  this.updateViewBox()
+  this.updateViewBox() // TODO use cached canvas to speed up zooming
 }
 
-Canvas.prototype.zoomTo = function(scale, x, y) {
-  this.zoomBy(scale / this.scale - 1, x, y)
+Canvas.prototype.zoomTo = function(scale, center) {
+  this.zoomBy(scale / this.scale - 1, center)
 }
 
 Canvas.prototype.zoomCenter = function() {
-  var viewport = this.el.getBoundingClientRect()
-  var bb = this.svg.getBBox()
-  this.centerX = bb.x + bb.width / 2
-  this.centerY = bb.y + bb.height / 2
-  this.scale = Math.max(ZOOM_MIN, Math.min(ZOOM_MAX, viewport.width * ZOOM_CENTER_SPACE / bb.width, viewport.height * ZOOM_CENTER_SPACE / bb.height))
-  this.updateViewBox()
+  var bb = this.model.boundingBox()
+  this.center = bb.center()
+  this.scale = Math.max(ZOOM_MIN, Math.min(ZOOM_MAX, this.viewport.width * ZOOM_CENTER_SPACE / bb.width, this.viewport.height * ZOOM_CENTER_SPACE / bb.height))
+  this.updateViewBox() // TODO animate, using cached canvas
 }
 
 Canvas.prototype.constrainZoom = function() {
-  if (this.scale < ZOOM_MIN) this.zoomTo(ZOOM_MIN, this.mouseX, this.mouseY)
-  else if (this.scale > ZOOM_MAX) this.zoomTo(ZOOM_MAX, this.mouseX, this.mouseY)
+  if (this.scale < ZOOM_MIN) this.zoomTo(ZOOM_MIN, this.mouse)
+  else if (this.scale > ZOOM_MAX) this.zoomTo(ZOOM_MAX, this.mouse)
 }
 
 Canvas.prototype.updateViewBox = function() {
-  var box = this.svg.viewBox.baseVal
-  var viewport = this.el.getBoundingClientRect()
-  var width = viewport.width / this.scale
-  var height = viewport.height / this.scale
+  this.updateScreenMatrix()
+  this.redraw()
 
-  box.x = this.centerX - width / 2
-  box.y = this.centerY - height / 2
-  box.width = width
-  box.height = height
+  var t = this.model.nodeAt(this.mouse.transform(this.screenToModel))
+  this.hoverObject(t)
 
-  if (this.mouseX === this.mouseX) {
-    var t = document.elementFromPoint(this.mouseX, this.mouseY)
-    this.hoverObject(t)
-  }
   if (this.editor.selection) {
     this.updateSelectionBox()
   }
 }
 
+Canvas.prototype.onResize = function() {
+  this.viewport = Rect.bb(this.el.getBoundingClientRect())
+
+  var pr = window.devicePixelRatio || 1
+
+  ;[this.modelCanvas, this.highlightCanvas].forEach(function(cv) {
+    cv.width = this.viewport.width * pr
+    cv.height = this.viewport.height * pr
+    cv.style.width = this.viewport.width + 'px'
+    cv.style.height = this.viewport.height + 'px'
+    cv.getContext('2d').scale(pr, pr)
+  }, this)
+
+  this.updateViewBox()
+}
+
+Canvas.prototype.updateScreenMatrix = function() {
+  this.screenToModel = Matrix
+    .translateBy(this.viewport.center().neg())
+    .scale(1 / this.scale)
+    .translateBy(this.center)
+  this.modelToScreen = Matrix
+    .translateBy(this.viewport.center())
+    .scale(this.scale)
+    .translateBy(this.center.neg())
+}
+
+Canvas.prototype.redraw = function() {
+  var pr = window.devicePixelRatio || 1
+
+  this.modelContext.clearRect(0, 0, this.viewport.width, this.viewport.height)
+  this.modelContext.save()
+
+  this.modelContext.translate(this.viewport.width / 2, this.viewport.height / 2)
+  this.modelContext.scale(this.scale, this.scale)
+  this.modelContext.translate(-this.center.x, -this.center.y)
+
+  this.model.drawTreeOn(this.modelContext)
+  this.modelContext.restore()
+}
+
 Canvas.prototype.hoverObject = function(object) {
-  this.highlightObject(!object || object === this.svg || object === this.editor.selection || object.ownerSVGElement !== this.svg ? null : object)
+  this.highlightObject(object)
 }
 
 Canvas.prototype.updateSelectionBox = function() {
   var object = this.editor.selection
-  var box = this.selectionBox
-  var list = box.pathSegList
-  list.clear()
-  if (!object) {
-    this.selectionBox.style.display = 'none'
-    this.selectionHandleGroup.style.display = 'none'
-    return
-  }
-  this.selectionBox.style.display = 'inline'
+  this.handleContainer.style.display = 'none'
+  if (!object) return
 
-  var ctm = object.getCTM()
-  var bb = object.getBBox()
+  var ctm = object.localToGlobal()
+  var bb = object.boundingBox()
 
-  var tl = bb.topLeft().transform(ctm)
-  var tc = bb.topCenter().transform(ctm)
-  var tr = bb.topRight().transform(ctm)
-  var rc = bb.rightCenter().transform(ctm)
-  var br = bb.bottomRight().transform(ctm)
-  var bc = bb.bottomCenter().transform(ctm)
-  var bl = bb.bottomLeft().transform(ctm)
-  var lc = bb.leftCenter().transform(ctm)
+  var points = bb.controlPoints()
 
-  list.appendItem(box.createSVGPathSegMovetoAbs(tl.x, tl.y))
-  list.appendItem(box.createSVGPathSegLinetoAbs(tr.x, tr.y))
-  list.appendItem(box.createSVGPathSegLinetoAbs(br.x, br.y))
-  list.appendItem(box.createSVGPathSegLinetoAbs(bl.x, bl.y))
-  list.appendItem(box.createSVGPathSegClosePath())
+  var width = points[0].distanceSquared(points[2])
+  var height = points[0].distanceSquared(points[6])
+  if (width < MIN_HANDLE && height < MIN_HANDLE) return
 
-  var width = tl.distanceSquared(tr)
-  var height = tl.distanceSquared(bl)
-  if (width < MIN_HANDLE && height < MIN_HANDLE) {
-    this.selectionHandleGroup.style.display = 'none'
-    return
-  }
-  this.selectionHandleGroup.style.display = 'inline'
+  this.handleContainer.style.display = 'block'
 
-  var angle = tr.sub(tl).angle()
-  ;[tl, tc, tr, rc, br, bc, bl, lc].forEach(function(v, i) {
-    var handle = this.selectionHandles[i]
+  var angle = points[2].sub(points[0]).angle()
+  points.forEach(function(v, i) {
+    var handle = this.handles[i]
     var hide = i % 2 && (i % 4 === 1 ? width : height) < MIN_MID_HANDLE
-    handle.style.display = hide ? 'none' : 'inline'
+    handle.style.display = hide ? 'none' : 'block'
     if (!hide) {
-      handle.replaceTransform(Matrix.translateBy(v).rotate(angle).translate(-3, -3))
+      handle.style.transform = Matrix.translateBy(v).rotate(angle).translate(-3, -3).toCSS()
       handle.style.cursor = cursor.resizeAlong(Math.PI * (3 - i) / 4 - angle)
     }
   }, this)
@@ -268,56 +285,18 @@ Canvas.prototype.updateSelectionBox = function() {
 Canvas.prototype.highlightObject = function(object) {
   this.highlightedObject = object
 
-  var path = this.highlightPath
-  var list = path.pathSegList
-  list.clear()
+  this.highlightContext.clearRect(0, 0, this.viewport.width, this.viewport.height)
 
-  if (!object) {
-    path.style.display = 'none'
-    return
-  }
-  path.style.display = 'inline'
-  var ctm = object.getCTM()
+  if (!object) return
 
-  switch (object.localName) {
-    case 'circle':
-    case 'ellipse':
-      if (object.localName === 'ellipse') {
-        var rx = object.rx.baseVal.value
-        var ry = object.ry.baseVal.value
-      } else {
-        rx = ry = object.r.baseVal.value
-      }
-      var cx = object.cx.baseVal.value
-      var cy = object.cy.baseVal.value
+  this.highlightContext.save()
+  this.modelToScreen.concat(object.localToGlobal()).transformContext(this.highlightContext)
+  object.pathOn(this.highlightContext)
+  this.highlightContext.restore()
 
-      var major = new Vec2(cx + rx, cy).transform(ctm)
-      var major2 = new Vec2(cx - rx, cy).transform(ctm)
-      var minor = new Vec2(cx, cy + ry).transform(ctm)
-      var minor2 = new Vec2(cx, cy - ry).transform(ctm)
-      var angle = minor.sub(new Vec2(cx, cy).transform(ctm)).angle() * 180 / Math.PI - 90
-
-      var rx = major.sub(major2).length() / 2
-      var ry = minor.sub(minor2).length() / 2
-
-      list.appendItem(path.createSVGPathSegMovetoAbs(major.x, major.y))
-      list.appendItem(path.createSVGPathSegArcAbs(major2.x, major2.y, rx, ry, angle, false, true))
-      list.appendItem(path.createSVGPathSegArcAbs(major.x, major.y, rx, ry, angle, false, true))
-      return
-    case 'rect':
-      var rect = new Rect(object.x.baseVal.value, object.y.baseVal.value, object.width.baseVal.value, object.height.baseVal.value)
-      var tl = rect.topLeft().transform(ctm)
-      var tr = rect.topRight().transform(ctm)
-      var br = rect.bottomRight().transform(ctm)
-      var bl = rect.bottomLeft().transform(ctm)
-
-      list.appendItem(path.createSVGPathSegMovetoAbs(tl.x, tl.y))
-      list.appendItem(path.createSVGPathSegLinetoAbs(tr.x, tr.y))
-      list.appendItem(path.createSVGPathSegLinetoAbs(br.x, br.y))
-      list.appendItem(path.createSVGPathSegLinetoAbs(bl.x, bl.y))
-      list.appendItem(path.createSVGPathSegClosePath())
-      return
-  }
+  this.highlightContext.lineWidth = 2
+  this.highlightContext.strokeStyle = 'rgb(68, 192, 255)'
+  this.highlightContext.stroke()
 }
 
 exports = Canvas

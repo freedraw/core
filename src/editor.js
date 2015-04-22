@@ -30,12 +30,13 @@ Editor.prototype.start = function() {
   document.body.appendChild(this.el)
   addEventListener('resize', this.onResize.bind(this))
   this.onResize()
+  this.canvas.onResize()
   this.canvas.zoomCenter()
   return this
 }
 
 Editor.prototype.onResize = function() {
-  this.canvas.updateViewBox()
+  this.canvas.onResize()
 }
 
 Editor.prototype.getData = function(type) {
