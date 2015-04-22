@@ -277,6 +277,9 @@ input[type=range]:disabled {
   height: 100%;
   pointer-events: none;
 }
+.selection-container {
+  transform: translateZ(0);
+}
 .selection-handle {
   box-shadow: .5px .5px 1px rgba(0,0,0,.4), 0 0 0 .6px rgba(0,0,0,.1);
   background: linear-gradient(to bottom right, #fff, #ddd);

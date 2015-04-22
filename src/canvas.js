@@ -36,8 +36,8 @@ function Canvas(editor) {
   this.el = h('.canvas', [
     this.modelCanvas = h('canvas'),
     h('.container', [
+      this.selectionCanvas = h('canvas'),
       this.selectionContainer = h('.selection-container', [
-        this.selectionCanvas = h('canvas')
       ].concat(this.selectionHandles)),
       this.highlightCanvas = h('canvas.highlight-canvas')
     ])
