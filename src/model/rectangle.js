@@ -10,10 +10,10 @@ function Rectangle(props, children) {
 }
 inherits(Rectangle, ShapeNode)
 
-Rectangle.prototype.boundingBox = function() {
+Rectangle.prototype.ownBoundingBox = function() {
   return this.bounds
 }
-Rectangle.prototype.setBoundingBox = function(bb) {
+Rectangle.prototype.updateBoundingBoxFrom = function(bb) {
   this.bounds = bb
 }
 

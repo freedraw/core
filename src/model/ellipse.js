@@ -11,10 +11,10 @@ function Ellipse(props, children) {
 }
 inherits(Ellipse, ShapeNode)
 
-Ellipse.prototype.boundingBox = function() {
+Ellipse.prototype.ownBoundingBox = function() {
   return Rect.centerHalf(this.center, this.radii)
 }
-Ellipse.prototype.setBoundingBox = function(bb) {
+Ellipse.prototype.updateBoundingBoxFrom = function(bb) {
   this.radii = bb.halfExtent()
   this.center = bb.center()
 }

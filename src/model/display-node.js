@@ -33,13 +33,25 @@ DisplayNode.prototype.ownBoundingBox = function() {
   return Rect.zero
 }
 DisplayNode.prototype.boundingBox = function() {
+  if (this._cachedBoundingBox) {
+    return this._cachedBoundingBox
+  }
   var bb = this.ownBoundingBox()
   for (var i = this.children.length; i--;) {
     bb = bb.union(this.children[i].boundingBox())
   }
-  return bb
+  return this._cachedBoundingBox = bb
 }
-DisplayNode.prototype.setBoundingBox = function() {
+DisplayNode.prototype.boundingBoxChanged = function() {
+  if (!this._cachedBoundingBox) return
+  this._cachedBoundingBox = null
+  if (this.parent) this.parent.boundingBoxChanged()
+}
+DisplayNode.prototype.setBoundingBox = function(bb) {
+  this.updateBoundingBoxFrom(bb)
+  this.boundingBoxChanged()
+}
+DisplayNode.prototype.updateBoundingBoxFrom = function(bb) {
   // TODO
 }
 
