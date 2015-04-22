@@ -2,7 +2,8 @@
 	"folders":
 	[
 		{
-			"path": "."
+			"path": ".",
+      "folder_include_patterns": ["node_modules", "node_modules/fd", "node_modules/fd/*"]
 		}
 	]
 }
