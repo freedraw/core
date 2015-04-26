@@ -4,8 +4,9 @@
 <script>
 'use strict'
 
-onerror = function() {
+onerror = function(e) {
   Native.showConsole()
+  Native.log('' + (e.stack || e))
 }
 
 var main = Native.require('fd/main')
